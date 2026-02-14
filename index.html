@@ -284,8 +284,8 @@
   }
 
   #tiad {
-    width: 150px;
-    height: 210px;
+    width: 250px;
+    height: 350px;
     z-index: 2;
   }
 
@@ -2226,12 +2226,8 @@
       verificarProximidadeTiaDInicial();
     }
 
-    if (level5Active && tiaDInteractionCompleted && !tiaDInteractionActive) {
-      verificarProximidadeTiaDInteracao();
-    }
-
-    if (level5Active && tioGuigoInteractionCompleted === false) {
-      verificarProximidadeTioGuigo();
+    if (level5Active && !tiaDInteractionActive && !tioGuigoInteractionActive) {
+      verificarProximidadeNPCsLevel5();
     }
     
     if (level3Active && exitArrowVisible) {
@@ -2814,7 +2810,7 @@
       gameScreen.style.backgroundSize = "cover";
 
       ground = window.innerHeight * 0.40;
-      posY = ground - 50;
+      posY = ground;
       posX = -150;
       velocityX = 0;
       velocityY = 0;
@@ -2904,14 +2900,38 @@
     gameLoop();
   }
 
-  function verificarProximidadeTiaDInteracao() {
-    const distancia = Math.abs(posX - tiaDX);
+  function verificarProximidadeNPCsLevel5() {
     const prompt = document.getElementById("interaction-prompt");
+    const distanciaTiaD = Math.abs(posX - tiaDX);
+    const distanciaTioGuigo = Math.abs(posX - tioGuigoDX);
     
-    if (distancia < 200) {
+    const tiaDProxima = tiaDInteractionCompleted && distanciaTiaD < 200;
+    const tioGuigoProximo = !tioGuigoInteractionCompleted && distanciaTioGuigo < 200;
+    
+    if (tiaDProxima || tioGuigoProximo) {
+      // Determinar qual NPC mostrar o prompt
+      let npcX, npcY;
+      
+      if (tiaDProxima && tioGuigoProximo) {
+        // Se ambos estão próximos, mostrar o prompt do mais próximo
+        if (distanciaTioGuigo < distanciaTiaD) {
+          npcX = tioGuigoDX;
+          npcY = tioGuigoDY;
+        } else {
+          npcX = tiaDX;
+          npcY = tiaDY;
+        }
+      } else if (tioGuigoProximo) {
+        npcX = tioGuigoDX;
+        npcY = tioGuigoDY;
+      } else {
+        npcX = tiaDX;
+        npcY = tiaDY;
+      }
+      
+      prompt.style.left = (npcX - 120) + "px";
+      prompt.style.bottom = (npcY + 250) + "px";
       prompt.style.display = "block";
-      prompt.style.left = (tiaDX - 120) + "px";
-      prompt.style.bottom = (tiaDY + 250) + "px";
     } else {
       prompt.style.display = "none";
     }
@@ -2938,24 +2958,6 @@
     tiaDInteractionActive = false;
     gameActive = true;
     gameLoop();
-  }
-
-  function verificarProximidadeTioGuigo() {
-    const distancia = Math.abs(posX - tioGuigoDX);
-    const prompt = document.getElementById("interaction-prompt");
-    
-    if (tioGuigoInteractionCompleted) {
-      prompt.style.display = "none";
-      return;
-    }
-    
-    if (distancia < 200) {
-      prompt.style.display = "block";
-      prompt.style.left = (tioGuigoDX - 120) + "px";
-      prompt.style.bottom = (tioGuigoDY + 250) + "px";
-    } else {
-      prompt.style.display = "none";
-    }
   }
 
   function iniciarInteracaoTioGuigo() {
