@@ -284,8 +284,8 @@
   }
 
   #tiad {
-    width: 150px;
-    height: 210px;
+    width: 250px;
+    height: 350px;
     z-index: 2;
   }
 
@@ -2226,12 +2226,8 @@
       verificarProximidadeTiaDInicial();
     }
 
-    if (level5Active && tiaDInteractionCompleted && !tiaDInteractionActive) {
-      verificarProximidadeTiaDInteracao();
-    }
-
-    if (level5Active && tioGuigoInteractionCompleted === false) {
-      verificarProximidadeTioGuigo();
+    if (level5Active && !tiaDInteractionActive && !tioGuigoInteractionActive) {
+      verificarProximidadeNPCsLevel5();
     }
     
     if (level3Active && exitArrowVisible) {
@@ -2814,7 +2810,7 @@
       gameScreen.style.backgroundSize = "cover";
 
       ground = window.innerHeight * 0.40;
-      posY = ground - 50;
+      posY = ground;
       posX = -150;
       velocityX = 0;
       velocityY = 0;
@@ -2904,6 +2900,45 @@
     gameLoop();
   }
 
+  function verificarProximidadeNPCsLevel5() {
+    const prompt = document.getElementById("interaction-prompt");
+    const distanciaTiaD = Math.abs(posX - tiaDX);
+    const distanciaTioGuigo = Math.abs(posX - tioGuigoDX);
+    
+    let mostrarPrompt = false;
+    
+    // Verificar Tia D (se o diálogo inicial já foi completado)
+    if (tiaDInteractionCompleted && distanciaTiaD < 200) {
+      mostrarPrompt = true;
+      prompt.style.left = (tiaDX - 120) + "px";
+      prompt.style.bottom = (tiaDY + 250) + "px";
+    }
+    
+    // Verificar Tio Guigo (se ainda não completou a interação)
+    if (!tioGuigoInteractionCompleted && distanciaTioGuigo < 200) {
+      mostrarPrompt = true;
+      prompt.style.left = (tioGuigoDX - 120) + "px";
+      prompt.style.bottom = (tioGuigoDY + 250) + "px";
+      
+      // Se ambos estão próximos, mostrar o prompt do mais próximo
+      if (tiaDInteractionCompleted && distanciaTiaD < 200) {
+        if (distanciaTioGuigo < distanciaTiaD) {
+          prompt.style.left = (tioGuigoDX - 120) + "px";
+          prompt.style.bottom = (tioGuigoDY + 250) + "px";
+        } else {
+          prompt.style.left = (tiaDX - 120) + "px";
+          prompt.style.bottom = (tiaDY + 250) + "px";
+        }
+      }
+    }
+    
+    if (mostrarPrompt) {
+      prompt.style.display = "block";
+    } else {
+      prompt.style.display = "none";
+    }
+  }
+
   function verificarProximidadeTiaDInteracao() {
     const distancia = Math.abs(posX - tiaDX);
     const prompt = document.getElementById("interaction-prompt");
@@ -2912,8 +2947,6 @@
       prompt.style.display = "block";
       prompt.style.left = (tiaDX - 120) + "px";
       prompt.style.bottom = (tiaDY + 250) + "px";
-    } else {
-      prompt.style.display = "none";
     }
   }
 
@@ -2945,7 +2978,6 @@
     const prompt = document.getElementById("interaction-prompt");
     
     if (tioGuigoInteractionCompleted) {
-      prompt.style.display = "none";
       return;
     }
     
@@ -2953,8 +2985,6 @@
       prompt.style.display = "block";
       prompt.style.left = (tioGuigoDX - 120) + "px";
       prompt.style.bottom = (tioGuigoDY + 250) + "px";
-    } else {
-      prompt.style.display = "none";
     }
   }
 
