@@ -2299,9 +2299,9 @@
       tEl.style.transform = `scaleX(${tinaX < posX ? -1 : 1})`;
     }
 
+    const hContainer = document.getElementById("heitor-container");
+
     if (level3Active) {
-      const hContainer = document.getElementById("heitor-container");
-      
       // Dynamic z-index based on vertical position (posY) vs Vodidi
       if (posY < vodidiY) {
         hContainer.style.zIndex = 1; // Behind Vodidi
@@ -2311,7 +2311,6 @@
     }
 
     if (level5Active) {
-      const hContainer = document.getElementById("heitor-container");
       const tiad = document.getElementById("tiad");
       const tioguigo = document.getElementById("tioguigo");
       
