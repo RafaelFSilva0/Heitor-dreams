@@ -1,0 +1,3227 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Heitor vs Tina - Edição Sonora</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    height: 100vh;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ===== MENU PRINCIPAL ===== */
+  #menu-screen {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("background_menu.png") no-repeat center center;
+    background-size: cover;
+    z-index: 500;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .menu-container {
+    position: absolute;
+    left: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    z-index: 501;
+  }
+
+  .menu-btn {
+    padding: 20px 60px;
+    font-size: 24px;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #8b5a2b, #5a3a1a);
+    color: #f5e6c8;
+    border: 4px solid #FFD700;
+    border-radius: 10px;
+    cursor: pointer;
+    text-shadow: 2px 2px black;
+    transition: all 0.3s;
+    font-weight: bold;
+    width: 300px;
+    text-align: center;
+  }
+
+  .menu-btn:hover {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #FFD700;
+  }
+
+  #menu-sair {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+  }
+
+  #menu-sair:hover {
+    background: linear-gradient(135deg, #ff6b6b, #ff4444);
+    color: #fff;
+  }
+
+  /* ===== MODAL DE CONSIDERAÇÕES ===== */
+  #consideracoes-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 600;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    background: rgba(0, 0, 0, 0.95);
+    border: 5px solid #FFD700;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 600px;
+    color: #ffffff;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+  }
+
+  .modal-content h2 {
+    font-size: 32px;
+    color: #FFD700;
+    margin-top: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  .modal-content p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #f5e6c8;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    margin: 20px 0;
+  }
+
+  .modal-close-btn {
+    padding: 12px 40px;
+    font-size: 18px;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #8b5a2b, #5a3a1a);
+    color: #f5e6c8;
+    border: 3px solid #FFD700;
+    border-radius: 8px;
+    cursor: pointer;
+    text-shadow: 2px 2px black;
+    font-weight: bold;
+    transition: all 0.3s;
+    margin-top: 20px;
+  }
+
+  .modal-close-btn:hover {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    transform: scale(1.05);
+  }
+
+  /* ===== FOLHAS CAINDO ===== */
+  .folha {
+    position: absolute;
+    top: -80px;
+    width: 80px;
+    animation: cair linear forwards;
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  @keyframes cair {
+    to {
+      transform: translateY(110vh) rotate(360deg);
+    }
+  }
+
+  /* ===== GAME SCREEN ===== */
+  #game-screen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #87CEEB url("background.png") no-repeat bottom center;
+    background-size: cover;
+    z-index: 0;
+  }
+
+  #hud {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    display: none;
+    justify-content: space-around;
+    z-index: 10;
+  }
+  .health-container { text-align: center; color: white; text-shadow: 2px 2px black; }
+  .health-bar { width: 200px; height: 20px; background: #444; border: 3px solid #000; margin-top: 5px; }
+  .health-fill { height: 100%; width: 100%; transition: width 0.2s; }
+  #heitor-life { background: #00ff00; }
+  #tina-life { background: #ff0000; }
+  #laura-life { background: #ff1493; }
+
+  #dialog-box {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    width: 500px;
+    background: transparent;
+    color: #ffffff;
+    padding: 20px;
+    border: none;
+    text-align: left;
+    z-index: 100;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  #dialog-title {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  #dialog-text {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    color: #ffffff;
+    min-height: 60px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  #dialog-hint {
+    color: #ffff00;
+    font-size: 14px;
+    margin: 10px 0 0 0;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  .btn {
+    padding: 12px 35px;
+    font-size: 20px;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(#8b5a2b, #5a3a1a);
+    color: #f5e6c8;
+    border: 4px solid #3b2f1c;
+    cursor: pointer;
+    text-shadow: 2px 2px black;
+  }
+  
+  .btn:hover {
+    opacity: 0.8;
+  }
+
+  #heitor-container {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    bottom: 40%; 
+    left: -200px; 
+    transition: left 4s linear;
+    z-index: 5;
+    image-rendering: pixelated;
+  }
+
+  #heitor {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    object-fit: contain;
+  }
+
+  #tina, #luiza, #laura, #tinatriste, #vodidi, #vodeco, #tiad, #tioguigo, #violao {
+    position: absolute;
+    image-rendering: pixelated;
+  }
+
+  #tina {
+    width: 170px;
+    height: 170px;
+    z-index: 2;
+  }
+  
+  #luiza {
+    width: 160px;
+    height: 180px;
+    z-index: 3;
+  }
+
+  #laura {
+    width: 190px;
+    height: 250px;
+    z-index: 3;
+  }
+
+  #vodidi {
+    width: 350px;
+    height: 470px;
+    z-index: 2;
+  }
+
+  #vodeco {
+    width: 300px;
+    height: 470px;
+    z-index: 2;
+  }
+
+  #tiad {
+    width: 150px;
+    height: 210px;
+    z-index: 2;
+  }
+
+  #tioguigo {
+    width: 160px;
+    height: 220px;
+    z-index: 2;
+  }
+
+  #violao {
+    width: 200px;
+    height: 200px;
+    z-index: 4;
+  }
+
+  #tinatriste {
+    width: 150px;
+    height: 150px;
+    z-index: 2;
+  }
+  
+  #tina { display: none; }
+  #luiza { display: none; }
+  #laura { display: none; }
+  #tinatriste { display: none; }
+  #vodidi { display: none; }
+  #vodeco { display: none; }
+  #tiad { display: none; }
+  #tioguigo { display: none; }
+  #violao { display: none; }
+
+  .diaper { position: absolute; top: -80px; width: 60px; animation: fall linear forwards; pointer-events: none; opacity: 0.7; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+  .hit-flash { filter: brightness(2) saturate(2) hue-rotate(300deg) !important; }
+
+  .shake-animation {
+    animation: shake 0.5s infinite !important;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+
+  #pokemon-intro {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    z-index: 200;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .pokemon-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  .pokemon-left, .pokemon-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: popIn 0.8s ease-out;
+  }
+
+  .pokemon-left img, .pokemon-right img {
+    width: 450px;
+    height: 450px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+  }
+
+  .pokemon-name {
+    font-size: 48px;
+    font-weight: bold;
+    color: #333;
+    text-shadow: 3px 3px 0px #fff;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+    letter-spacing: 3px;
+  }
+
+  .vs-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 180px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 5px 5px 0px #ff0000, 10px 10px 0px #0000ff;
+    animation: pulse 1s ease-out;
+    z-index: 201;
+  }
+
+  .duelar-btn {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 20px 60px;
+    font-size: 28px;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(#ff6b00, #ff0000);
+    color: #fff;
+    border: 6px solid #cc0000;
+    cursor: pointer;
+    text-shadow: 3px 3px black;
+    z-index: 202;
+    animation: bounce 0.8s ease-in-out infinite;
+  }
+
+  .duelar-btn:hover {
+    background: linear-gradient(#ff8000, #ff3333);
+    transform: translateX(-50%) scale(1.1);
+  }
+
+  #jokenpo-interface {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(180deg, rgba(0,0,0,0.8), rgba(0,0,0,0.9));
+    padding: 30px;
+    box-sizing: border-box;
+    z-index: 50;
+  }
+
+  .jokenpo-ui {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .jokenpo-player-section {
+    flex: 1;
+    text-align: center;
+    color: white;
+  }
+
+  .jokenpo-player-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px black;
+  }
+
+  .jokenpo-lives-display {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .life-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff0000;
+    border: 2px solid #fff;
+    transition: all 0.3s;
+  }
+
+  .life-indicator.won {
+    background: #00ff00;
+    box-shadow: 0 0 10px #00ff00;
+  }
+
+  .jokenpo-choice-display {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 215, 0, 0.2);
+    border: 3px solid #FFD700;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    transition: all 0.3s;
+  }
+
+  .jokenpo-choice-display img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+  }
+
+  .jokenpo-choice-display.selected {
+    background: rgba(0, 255, 0, 0.3);
+    border-color: #00ff00;
+    box-shadow: 0 0 15px #00ff00;
+  }
+
+  .jokenpo-buttons-section {
+    flex: 1;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  .jokenpo-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    border: 3px solid #FFD700;
+    background: rgba(255, 215, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 0;
+  }
+
+  .jokenpo-btn img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+  }
+
+  .jokenpo-btn:hover {
+    background: rgba(255, 215, 0, 0.3);
+    transform: scale(1.1);
+  }
+
+  .jokenpo-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .jokenpo-result-text {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #FFD700;
+    font-size: 48px;
+    font-weight: bold;
+    text-shadow: 3px 3px 8px rgba(0,0,0,0.8), 0 0 20px #FFD700;
+    z-index: 60;
+    text-align: center;
+    animation: popMessage 0.8s ease-out;
+  }
+
+  .intro-container {
+    position: absolute;
+    bottom: 25%;
+    width: 100%;
+    text-align: center;
+    color: white;
+    text-shadow: 3px 3px 5px black;
+    z-index: 3;
+  }
+
+  /* ===== ESTILOS PARA VÓ DIDI E CHURROS ===== */
+  
+  #interaction-prompt {
+    display: none;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: #FFD700;
+    padding: 15px 25px;
+    border: 3px solid #FFD700;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 55;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    animation: pulse-prompt 1s infinite;
+    white-space: nowrap;
+  }
+
+  @keyframes pulse-prompt {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  #choice-menu {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    width: 550px;
+    background: rgba(0, 0, 0, 0.95);
+    color: #ffffff;
+    padding: 30px;
+    border: 4px solid #FFD700;
+    border-radius: 15px;
+    z-index: 110;
+    text-align: center;
+  }
+
+  #choice-menu h3 {
+    font-size: 22px;
+    color: #FFD700;
+    margin: 0 0 20px 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  #choice-menu p {
+    font-size: 16px;
+    margin: 0 0 25px 0;
+    line-height: 1.5;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  .choice-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .choice-btn {
+    padding: 12px 30px;
+    font-size: 16px;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #8b5a2b, #5a3a1a);
+    color: #f5e6c8;
+    border: 3px solid #FFD700;
+    border-radius: 8px;
+    cursor: pointer;
+    text-shadow: 2px 2px black;
+    transition: all 0.3s;
+    font-weight: bold;
+  }
+
+  .choice-btn:hover {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #FFD700;
+  }
+
+  #churros-menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 120;
+    padding: 40px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+
+  #churros-menu-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .churros-title {
+    font-size: 48px;
+    color: #FFD700;
+    text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.8);
+    margin-bottom: 40px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .churros-container {
+    display: flex;
+    gap: 60px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    max-width: 1200px;
+  }
+
+  .churro-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .churro-option:hover {
+    transform: scale(1.05);
+  }
+
+  .churro-image {
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 215, 0, 0.1);
+    border: 4px solid #FFD700;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  }
+
+  .churro-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .churro-info {
+    text-align: center;
+    max-width: 350px;
+  }
+
+  .churro-name {
+    font-size: 28px;
+    color: #FFD700;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  .churro-description {
+    font-size: 16px;
+    color: #ffffff;
+    line-height: 1.6;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    margin-bottom: 15px;
+  }
+
+  .churro-btn {
+    padding: 15px 40px;
+    font-size: 18px;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    border: 3px solid #FF8C00;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    text-shadow: 1px 1px black;
+  }
+
+  .churro-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px #FFD700;
+  }
+
+  .churro-decline-btn {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 40px;
+    font-size: 18px;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #8b5a2b, #5a3a1a);
+    color: #f5e6c8;
+    border: 3px solid #FFD700;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 130;
+    transition: all 0.3s;
+    text-shadow: 2px 2px black;
+  }
+
+  .churro-decline-btn:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+
+  /* ===== VIOLÃO ===== */
+  
+  #violao-screen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 300;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .violao-close-btn {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: #FFD700;
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    z-index: 310;
+  }
+  
+  .violao-close-btn:hover {
+    background: #FFA500;
+    transform: scale(1.1);
+  }
+  
+  .violao-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+  
+  #heitor-violao {
+    width: 500px;
+    height: 500px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 30px rgba(255, 215, 0, 0.5));
+    image-rendering: pixelated;
+  }
+  
+  .btn-solta-som {
+    padding: 20px 60px;
+    font-size: 28px;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    border: 4px solid #FF8C00;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    text-shadow: 2px 2px black;
+    transition: all 0.3s;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+  }
+  
+  .btn-solta-som:hover:not(:disabled) {
+    transform: scale(1.1);
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+  }
+  
+  .btn-solta-som:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  .btn-solta-som:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* ===== INVENTÁRIO ===== */
+
+  #inventory-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 25px;
+    font-size: 18px;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #8b5a2b, #5a3a1a);
+    color: #f5e6c8;
+    border: 3px solid #FFD700;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 50;
+    transition: all 0.3s;
+    text-shadow: 2px 2px black;
+    display: none;
+  }
+
+  #inventory-button:hover {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #FFD700;
+  }
+
+  #inventory-panel {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    background: rgba(0, 0, 0, 0.95);
+    border: 4px solid #FFD700;
+    border-radius: 15px;
+    padding: 30px;
+    z-index: 200;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+  }
+
+  #inventory-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: #FFD700;
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  #inventory-close:hover {
+    background: #FFA500;
+  }
+
+  .inventory-title {
+    font-size: 24px;
+    color: #FFD700;
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  .inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .inventory-slot {
+    width: 100%;
+    aspect-ratio: 1;
+    background: rgba(255, 215, 0, 0.1);
+    border: 3px solid #FFD700;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .inventory-slot:hover {
+    background: rgba(255, 215, 0, 0.2);
+    box-shadow: 0 0 15px #FFD700;
+  }
+
+  .inventory-slot img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+  }
+
+  .inventory-slot.empty {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: #666;
+  }
+
+  .inventory-slot.empty:hover {
+    background: rgba(0, 0, 0, 0.3);
+    box-shadow: none;
+  }
+
+  .inventory-description {
+    background: rgba(255, 215, 0, 0.1);
+    border: 2px solid #FFD700;
+    border-radius: 8px;
+    padding: 15px;
+    color: #ffffff;
+    text-align: center;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    font-size: 14px;
+  }
+
+  #inventory-notification {
+    display: none;
+    position: fixed;
+    top: 100px;
+    right: 30px;
+    background: rgba(0, 0, 0, 0.9);
+    color: #FFD700;
+    padding: 20px 30px;
+    border: 3px solid #FFD700;
+    border-radius: 10px;
+    z-index: 150;
+    font-size: 16px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    animation: slideIn 0.5s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(100px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* ===== VISUALIZAÇÃO DE ITEM GRANDE ===== */
+  
+  #item-viewer {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 300;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .item-viewer-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .item-viewer-image {
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 215, 0, 0.1);
+    border: 5px solid #FFD700;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+  }
+
+  .item-viewer-image img {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+  }
+
+  .item-viewer-description {
+    background: rgba(0, 0, 0, 0.8);
+    border: 4px solid #FFD700;
+    border-radius: 15px;
+    padding: 25px 40px;
+    color: #ffffff;
+    text-align: center;
+    max-width: 600px;
+    font-size: 18px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    line-height: 1.6;
+  }
+
+  .item-viewer-close {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: #FFD700;
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+  }
+
+  .item-viewer-close:hover {
+    background: #FFA500;
+    transform: scale(1.1);
+  }
+
+  #exit-arrow {
+    display: none;
+    position: absolute;
+    right: 100px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 150px;
+    z-index: 30;
+    animation: pulse-arrow 1s ease-in-out infinite;
+    text-shadow: 0 0 30px #FFD700, 0 0 60px #FF6B00;
+    filter: drop-shadow(0 0 10px #FFD700);
+  }
+
+  @keyframes pulse-arrow {
+    0%, 100% { 
+      transform: translateY(-50%) scale(1);
+      opacity: 1;
+    }
+    50% { 
+      transform: translateY(-50%) scale(1.2) translateX(30px);
+      opacity: 0.7;
+    }
+  }
+
+  @keyframes popIn {
+    0% { opacity: 0; transform: scale(0.5); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-20px); }
+  }
+
+  @keyframes popMessage {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+</style>
+</head>
+<body>
+
+<!-- MENU PRINCIPAL -->
+<div id="menu-screen">
+  <div class="menu-container">
+    <button class="menu-btn" onclick="iniciarAventura()">🎮 Começar Aventura</button>
+    <button class="menu-btn" onclick="abrirConsideracoes()">📜 Considerações</button>
+    <button class="menu-btn" onclick="abrirCreditos()">🎬 Créditos</button>
+    <button class="menu-btn" id="menu-sair" onclick="sairJogo()">❌ Sair</button>
+  </div>
+</div>
+
+<!-- MODAL DE CONSIDERAÇÕES -->
+<div id="consideracoes-modal">
+  <div class="modal-content">
+    <h2>💖 Considerações 💖</h2>
+    <p>Este jogo trata-se de algo feito para nosso amado Menino Heitor, se lembrar eternamente de todos aqueles que o amam e o quererm bem. Algo simples, mas feito com amor e que será uma memoria afetiva poderosa. Te amamos Heitor, Aproveitem cada momento desse pequeno entretenimento.</p>
+    <button class="modal-close-btn" onclick="fecharConsideracoes()">Fechar</button>
+  </div>
+</div>
+
+<!-- TELA DO JOGO -->
+<div id="game-screen">
+  <div id="pokemon-intro">
+    <div class="pokemon-container">
+      <div class="pokemon-left">
+        <img src="heitor.png" id="heitor-intro" alt="Heitor">
+        <div class="pokemon-name">HEITOR</div>
+      </div>
+      <div class="vs-text">VS</div>
+      <div class="pokemon-right">
+        <img src="laura.png" id="laura-intro" alt="Laura">
+        <div class="pokemon-name">LAURA</div>
+      </div>
+      <button class="duelar-btn" id="duelar-btn">⚡ DUELAR ⚡</button>
+    </div>
+  </div>
+
+  <div id="jokenpo-interface">
+    <div class="jokenpo-result-text" id="jokenpo-result"></div>
+    <div class="jokenpo-ui">
+      <div class="jokenpo-player-section">
+        <div class="jokenpo-player-name">HEITOR</div>
+        <div class="jokenpo-lives-display" id="heitor-lives"></div>
+        <div class="jokenpo-choice-display" id="heitor-choice-display">?</div>
+      </div>
+
+      <div class="jokenpo-buttons-section">
+        <button class="jokenpo-btn" id="btn-pedra" onclick="jogarPedra()" title="Pedra">
+          <img src="pedra.png" alt="Pedra">
+        </button>
+        <button class="jokenpo-btn" id="btn-papel" onclick="jogarPapel()" title="Papel">
+          <img src="papel.png" alt="Papel">
+        </button>
+        <button class="jokenpo-btn" id="btn-tesoura" onclick="jogarTesoura()" title="Tesoura">
+          <img src="tesoura.png" alt="Tesoura">
+        </button>
+      </div>
+
+      <div class="jokenpo-player-section">
+        <div class="jokenpo-player-name">LAURA</div>
+        <div class="jokenpo-lives-display" id="laura-lives"></div>
+        <div class="jokenpo-choice-display" id="laura-choice-display">?</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hud">
+    <div class="health-container">HEITOR<div class="health-bar"><div id="heitor-life" class="health-fill"></div></div></div>
+    <div class="health-container" id="tina-hud">TINA<div class="health-bar"><div id="tina-life" class="health-fill"></div></div></div>
+    <div class="health-container" id="laura-hud" style="display:none;">LAURA<div class="health-bar"><div id="laura-life" class="health-fill"></div></div></div>
+  </div>
+
+  <div id="dialog-box">
+    <h2 id="dialog-title"></h2>
+    <p id="dialog-text"></p>
+    <p id="dialog-hint">Pressione [E] para continuar</p>
+  </div>
+
+  <div class="intro-container">
+    <div class="intro-text" id="text" style="font-size:32px; margin-bottom:25px;">Convidado, prepare-se para a aventura.</div>
+    <button class="btn" id="btn" onclick="nextText()">Continuar</button>
+  </div>
+
+  <div id="heitor-container">
+    <img src="heitor.png" id="heitor" alt="Heitor">
+  </div>
+
+  <img src="tina.png" id="tina">
+  <img src="luiza.png" id="luiza">
+  <img src="laura.png" id="laura">
+  <img src="tinatriste.png" id="tinatriste">
+  <img src="vodidi.png" id="vodidi">
+  <img src="vodeco.png" id="vodeco">
+  <img src="tiad.png" id="tiad">
+  <img src="tioguigo.png" id="tioguigo">
+  <img src="violao.png" id="violao">
+
+  <!-- CAIXA DE INTERAÇÃO COM NPCs -->
+  <div id="interaction-prompt">
+    🔶 APERTE [E] PARA INTERAGIR
+  </div>
+
+  <!-- MENU DE ESCOLHA (SIM/NÃO) -->
+  <div id="choice-menu">
+    <h3>🍪 VÓ DIDI DIZ 🍪</h3>
+    <p>Você DEVE estar cansado de suas viagens! Venha, desfrute de um delicioso churros!!</p>
+    <div class="choice-buttons">
+      <button class="choice-btn" onclick="escolherChurros('sim')">Hummm, delícia! Quero um!</button>
+      <button class="choice-btn" onclick="escolherChurros('nao')">Não estou a fim...</button>
+    </div>
+  </div>
+
+  <!-- MENU DE CHURROS -->
+  <div id="churros-menu">
+    <div id="churros-menu-content">
+      <h1 class="churros-title">🍪 CARDÁPIO DE CHURROS 🍪</h1>
+      
+      <div class="churros-container">
+        <!-- CHURRO DOCE DE LEITE -->
+        <div class="churro-option" onclick="escolherChurro('doce')">
+          <div class="churro-image">
+            <img src="churrosdoce.png" alt="Churro Doce de Leite">
+          </div>
+          <div class="churro-info">
+            <div class="churro-name">🍯 CHURRO DOCE DE LEITE 🍯</div>
+            <p class="churro-description">
+              Um churro irresistível recheado com doce de leite cremoso e envolvido em calda de doce de leite puro. Crocante por fora, derretendo o melhor doce de leite por dentro. Uma verdadeira explosão de sabor que vai deixar seu paladar pedindo mais!
+            </p>
+            <button class="churro-btn">Escolher este 😍</button>
+          </div>
+        </div>
+
+        <!-- CHURRO NUTELLA -->
+        <div class="churro-option" onclick="escolherChurro('nutella')">
+          <div class="churro-image">
+            <img src="churrosnutella.png" alt="Churro Nutella">
+          </div>
+          <div class="churro-info">
+            <div class="churro-name">🍫 CHURRO NUTELLA 🍫</div>
+            <p class="churro-description">
+              Um espetáculo de sabor! Churro crocante recheado com Nutella suíça pura, derretida na textura perfeita. Finalizado com um toque de calda de chocolate belga e avelã. Uma experiência de sabor inigualável que fará você voltar sempre!
+            </p>
+            <button class="churro-btn">Escolher este 🤤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="churro-decline-btn" onclick="recusarChurrosAposMenu()">Mudei de ideia... 😅 Sair do Menu</button>
+  </div>
+
+  <!-- TELA DO VIOLÃO -->
+  <div id="violao-screen">
+    <button class="violao-close-btn" onclick="fecharTelaViolao()">✕</button>
+    <div class="violao-container">
+      <img src="hviolao.png" id="heitor-violao" alt="Heitor com Violão">
+      <button class="btn-solta-som" onclick="tocandoViolao()">🎸 SOLTA O SOM! 🎸</button>
+    </div>
+  </div>
+
+  <!-- INVENTÁRIO -->
+  <button id="inventory-button" onclick="abrirInventario()">📦 INVENTÁRIO [I]</button>
+
+  <div id="inventory-panel">
+    <button id="inventory-close" onclick="fecharInventario()">✕</button>
+    <div class="inventory-title">📦 INVENTÁRIO</div>
+    <div class="inventory-grid" id="inventory-grid"></div>
+    <div class="inventory-description" id="inventory-description">Selecione um item para ver a descrição</div>
+  </div>
+
+  <!-- VISUALIZADOR DE ITEM -->
+  <div id="item-viewer">
+    <button class="item-viewer-close" onclick="fecharViewerItem()">✕</button>
+    <div class="item-viewer-container">
+      <div class="item-viewer-image" id="item-viewer-image"></div>
+      <div class="item-viewer-description" id="item-viewer-description"></div>
+    </div>
+  </div>
+
+  <div id="inventory-notification"></div>
+
+  <div id="exit-arrow">→</div>
+</div>
+
+<script>
+  // FRAMES DE ANIMAÇÃO
+  const heitorFrames = ["heitor.png", "h1.png", "h2.png", "h3.png", "h4.png", "h5.png"];
+  const pingPongSequence = [1, 2, 3, 4, 5, 4, 3, 2];
+  let currentFrameIndex = 0;
+  let animationTimer = 0;
+  const frameDelay = 5;
+
+  // ÁUDIO - Inicializar sem loop inicialmente
+  const somMenu = new Audio('trilhamenu.mp3');
+  somMenu.loop = true;
+  somMenu.volume = 0.5;
+
+  const somPrincipal = new Audio('trilha_principal.mp3');
+  somPrincipal.loop = true;
+  somPrincipal.volume = 0.5;
+
+  const somTaberna = new Audio('somtaberna.mp3');
+  somTaberna.loop = true;
+  somTaberna.volume = 0.5;
+
+  const somBatalha = new Audio('batalha.mp3');
+  somBatalha.loop = true;
+  somBatalha.volume = 0.6;
+
+  const somjokenpo = new Audio('somjokenpo.mp3');
+  somjokenpo.loop = true;
+  somjokenpo.volume = 0.2;
+
+  const somcocegas = new Audio('somcocegas.mp3');
+  somcocegas.volume = 1.0;
+
+  const somAtaque = new Audio('ataque.mp3');
+  const somPulo = new Audio('pulo.mp3');
+  const somComer = new Audio('comer.mp3');
+  somComer.volume = 0.8;
+
+  const somviolao = new Audio('somviolao.mp3');
+  somviolao.volume = 0.8;
+
+  // FLAG para controlar se a música de menu já tocou
+  let musicaMenuTocando = false;
+
+  // INICIAR MÚSICA DO MENU - apenas uma vez
+  function iniciarMusicaMenu() {
+    if (!musicaMenuTocando) {
+      musicaMenuTocando = true;
+      somMenu.play().catch(e => console.log("Música do menu ainda não disponível"));
+      document.removeEventListener('click', iniciarMusicaMenu);
+    }
+  }
+  document.addEventListener('click', iniciarMusicaMenu);
+
+  // VARIÁVEIS DE JOGO
+  let stage = 0, gameActive = false, cutsceneActive = false, battleActive = false;
+  let level2Active = false, level3Active = false, level4Active = false, level5Active = false;
+  let ground = window.innerHeight * 0.40;
+  let posX = window.innerWidth * 0.4, posY = -300, velocityX = 0, velocityY = 0;
+  let accel = 0.8, friction = 0.85, maxSpeed = 8, gravity = 0.8, jumpForce = 19;
+  let direction = 1, isJumping = false, coyoteTime = 0, jumpBuffer = 0;
+  let tinaX = window.innerWidth + 100, tinaY = ground, tinaVY = 0, tinaDir = -1;
+  let luizaX = -150;
+  let lauraX = window.innerWidth + 100, lauraY = ground;
+  let vodidiX = window.innerWidth + 100, vodidiY = ground;
+  let vodecoDX = window.innerWidth + 100, vodecoDY = ground;
+  let tiaDX = window.innerWidth + 100, tiaDY = ground;
+  let tioGuigoDX = window.innerWidth + 100, tioGuigoDY = ground;
+  let violaoX = 0, violaoY = 0;
+  let heitorHP = 5, tinaHP = 10, lauraHP = 8, keys = {};
+  let diaperInterval;
+  let jokenpoHeitorVitorias = 0, jokenpoLauraVitorias = 0;
+  let jokenpoAtivo = false, jokenpoJogado = false, jokenpoEmAndamento = false;
+  let dialogWaitingForInput = false;
+
+  // VARIÁVEIS VÓ DIDI
+  let vodidiInteractionActive = false;
+  let vodidiInteractionCompleted = false;
+  let churrosEscolhido = null;
+
+  // VARIÁVEIS VODECO
+  let vodecoDInteractionActive = false;
+  let vodecoDInteractionCompleted = false;
+  let violaoDesbloqueado = false;
+  let telaViolaoAberta = false;
+  let violaoRespostaUsuario = '';
+
+  // VARIÁVEIS TIA D (TABERNA)
+  let tiaDInteractionActive = false;
+  let tiaDInteractionCompleted = false;
+  let tiaDDialogInicial = false;
+
+  // VARIÁVEIS TIO GUIGO
+  let tioGuigoInteractionActive = false;
+  let tioGuigoInteractionCompleted = false;
+  let perfumeOferecido = false;
+  let mostrarConfirmacaoAgain = false;
+
+  // VARIÁVEIS INVENTÁRIO
+  let inventoryItems = [null, null, null, null, null, null, null];
+  let selectedSlot = -1;
+  let inventoryUnlocked = false;
+  let canExitLevel3 = false;
+  let canExitLevel4 = false;
+  let canExitLevel5 = false;
+  let exitArrowVisible = false;
+
+  const itemDescriptions = {
+    'carta': 'Item que a vovó do churros me deu. Parece usada.',
+    'violao': 'Violão que ganhei do vovó músico! Parece usado.',
+    'perfume': 'Um perfume especial que recebi do Tio Guigo na taberna. Cheira muito bem!'
+  };
+
+  // ========== FUNÇÕES DO MENU ==========
+
+  function iniciarAventura() {
+    const menuScreen = document.getElementById("menu-screen");
+    const gameScreen = document.getElementById("game-screen");
+    
+    menuScreen.style.display = "none";
+    gameScreen.style.display = "block";
+    
+    // Remover folhas do menu
+    document.querySelectorAll(".folha").forEach(f => f.remove());
+    
+    // Parar COMPLETAMENTE a música do menu
+    somMenu.pause();
+    somMenu.currentTime = 0;
+    
+    // Aguardar um pouco para garantir que parou
+    setTimeout(() => {
+      somPrincipal.currentTime = 0;
+      somPrincipal.play().catch(e => console.log("Música principal ainda não disponível"));
+      nextText();
+    }, 100);
+  }
+
+  function abrirConsideracoes() {
+    const modal = document.getElementById("consideracoes-modal");
+    modal.style.display = "flex";
+  }
+
+  function fecharConsideracoes() {
+    const modal = document.getElementById("consideracoes-modal");
+    modal.style.display = "none";
+  }
+
+  function abrirCreditos() {
+    const modal = document.createElement("div");
+    modal.id = "creditos-modal";
+    modal.style.cssText = `
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 600;
+      justify-content: center;
+      align-items: center;
+    `;
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h2>🎬 Créditos 🎬</h2>
+        <p><strong>Desenvolvido por:</strong></p>
+        <p>👨‍💼 Papai Rafa</p>
+        <p><strong>Com apoio moral:</strong></p>
+        <p>💖 Toda a família</p>
+        <button class="modal-close-btn" onclick="document.getElementById('creditos-modal').remove()">Fechar</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  function sairJogo() {
+    if (confirm("Tem certeza que deseja sair do jogo?")) {
+      window.close();
+    }
+  }
+
+  function iniciarAnimacaoFolhas() {
+    setInterval(() => {
+      const folha = document.createElement("img");
+      folha.src = "folha.png";
+      folha.classList.add("folha");
+      folha.style.left = Math.random() * 100 + "vw";
+      folha.style.animationDuration = (8 + Math.random() * 6) + "s";
+      document.getElementById("menu-screen").appendChild(folha);
+      setTimeout(() => folha.remove(), 15000);
+    }, 800);
+  }
+
+  iniciarAnimacaoFolhas();
+
+  function typeText(element, text, speed = 80) {
+    return new Promise((resolve) => {
+      let index = 0;
+      element.innerText = "";
+      
+      function type() {
+        if (index < text.length) {
+          element.innerText += text.charAt(index);
+          index++;
+          setTimeout(type, speed);
+        } else {
+          resolve();
+        }
+      }
+      
+      type();
+    });
+  }
+
+  function showDialog(title, text) {
+    return new Promise((resolve) => {
+      const box = document.getElementById("dialog-box");
+      const titleEl = document.getElementById("dialog-title");
+      const textEl = document.getElementById("dialog-text");
+      const hintEl = document.getElementById("dialog-hint");
+      
+      box.style.display = "block";
+      
+      if (titleEl.innerText !== title) {
+        titleEl.innerText = title;
+      }
+      
+      hintEl.style.display = "none";
+      dialogWaitingForInput = false;
+
+      typeText(textEl, text, 60).then(() => {
+        hintEl.style.display = "block";
+        dialogWaitingForInput = true;
+        
+        const handleInput = (e) => {
+          if (e.key.toLowerCase() === 'e' && dialogWaitingForInput) {
+            dialogWaitingForInput = false;
+            document.removeEventListener("keydown", handleInput);
+            
+            box.style.display = "none";
+            titleEl.innerText = "";
+            textEl.innerText = "";
+            
+            resolve();
+          }
+        };
+        
+        document.addEventListener("keydown", handleInput);
+      });
+    });
+  }
+
+  function updateHeitorFrame() {
+    const heitorEl = document.getElementById("heitor");
+    
+    if (Math.abs(velocityX) < 0.1 && gameActive) {
+      heitorEl.src = heitorFrames[0];
+      currentFrameIndex = 0;
+      animationTimer = 0;
+      return;
+    }
+    
+    if (Math.abs(velocityX) >= 0.1 || cutsceneActive) {
+      animationTimer++;
+      if (animationTimer >= frameDelay) {
+        animationTimer = 0;
+        currentFrameIndex = (currentFrameIndex + 1) % pingPongSequence.length;
+        heitorEl.src = heitorFrames[pingPongSequence[currentFrameIndex]];
+      }
+    } else {
+      heitorEl.src = heitorFrames[0];
+      currentFrameIndex = 0;
+      animationTimer = 0;
+    }
+  }
+
+  function nextText() {
+    const text = document.getElementById("text");
+    const btn = document.getElementById("btn");
+    const heitorContainer = document.getElementById("heitor-container");
+    
+    if (stage === 0) {
+      text.innerText = "Heitor precisa de você.";
+      stage = 1;
+      setTimeout(() => { heitorContainer.style.left = "40%"; }, 500);
+    } else if (stage === 1) {
+      text.innerText = "A jornada começa agora...";
+      btn.style.display = "none";
+      stage = 2;
+      setTimeout(createStartButton, 2000);
+    }
+  }
+
+  function createStartButton() {
+    const container = document.querySelector(".intro-container");
+    const newBtn = document.createElement("button");
+    newBtn.innerText = "Vamos lá!";
+    newBtn.classList.add("btn");
+    container.appendChild(newBtn);
+    newBtn.onclick = () => { container.style.display = "none"; showMission(); };
+  }
+
+  function showMission() {
+    const box = document.getElementById("dialog-box");
+    box.style.display = "block";
+    document.getElementById("dialog-title").innerText = "⚠️ ATENÇÃO!";
+    document.getElementById("dialog-text").innerText = "A Tina está querendo arranhar a Princesa Luiza, salve-a!";
+    document.getElementById("dialog-hint").style.display = "none";
+    
+    const startListener = (e) => {
+      if (e.key.toLowerCase() === 'e') {
+        // Parar música principal completamente
+        somPrincipal.pause();
+        somPrincipal.currentTime = 0;
+        
+        // Aguardar e começar a música de batalha
+        setTimeout(() => {
+          somBatalha.currentTime = 0;
+          somBatalha.play().catch(e => console.log("Música de batalha ainda não disponível"));
+          box.style.display = "none";
+          document.removeEventListener("keydown", startListener);
+          startGame();
+        }, 100);
+      }
+    };
+    document.addEventListener("keydown", startListener);
+  }
+
+  function startGame() {
+    document.getElementById("hud").style.display = "flex";
+    document.getElementById("tina-hud").style.display = "block";
+    battleActive = true;
+    document.getElementById("heitor-container").style.transition = "none";
+    document.getElementById("tina").style.display = "block";
+    fallFromSky();
+  }
+
+    function fallFromSky() {
+    function fall() {
+      velocityY -= gravity;
+      posY += velocityY;
+      if (posY <= ground) {
+        posY = ground;
+        velocityY = 0;
+        enableControls();
+        gameActive = true;
+        gameLoop();
+        return;
+      }
+      requestAnimationFrame(fall);
+    }
+    velocityY = 0;
+    fall();
+  }
+
+  function enableControls() {
+    document.addEventListener("keydown", e => {
+      keys[e.key.toLowerCase()] = true;
+      if ((e.code === "Space" || e.key === "w") && !isJumping && gameActive) {
+        jumpBuffer = 6;
+        somPulo.currentTime = 0;
+        somPulo.play().catch(e => console.log("Som de pulo não disponível"));
+      }
+    });
+    document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
+    document.addEventListener("mousedown", e => { if (e.button === 0 && gameActive && battleActive) attack(); });
+  }
+
+  function attack() {
+    somAtaque.currentTime = 0;
+    somAtaque.play().catch(e => console.log("Som de ataque não disponível"));
+
+    const effect = document.createElement("div");
+    effect.innerText = "💥";
+    effect.style.cssText = `position:absolute; z-index:5; font-size:100px; left:${posX + (direction * 110)}px; bottom:${posY + 50}px;`;
+    document.body.appendChild(effect);
+    setTimeout(() => effect.remove(), 200);
+
+    let dist = Math.abs((posX + (direction * 90)) - tinaX);
+    if (dist < 110 && Math.abs(posY - tinaY) < 110) {
+      tinaHP--;
+      updateHUD();
+      document.getElementById("tina").classList.add("hit-flash");
+      setTimeout(() => document.getElementById("tina").classList.remove("hit-flash"), 150);
+      if (tinaHP <= 0) startVictoryCutscene();
+    }
+  }
+
+  function updateHUD() {
+    document.getElementById("heitor-life").style.width = Math.max(0, heitorHP * 20) + "%";
+    document.getElementById("tina-life").style.width = Math.max(0, tinaHP * 10) + "%";
+    document.getElementById("laura-life").style.width = Math.max(0, lauraHP * 12.5) + "%";
+  }
+
+  function startVictoryCutscene() {
+    gameActive = false;
+    battleActive = false;
+    document.getElementById("hud").style.display = "none";
+    somBatalha.pause();
+    somBatalha.currentTime = 0;
+    
+    setTimeout(() => {
+      somPrincipal.currentTime = 0;
+      somPrincipal.play().catch(e => console.log("Música principal não disponível"));
+    }, 100);
+
+    const tina = document.getElementById("tina");
+    tina.style.transition = "all 1s ease-in";
+    tina.style.left = (window.innerWidth + 500) + "px";
+    tina.style.bottom = "800px";
+    tina.style.transform = "rotate(720deg)";
+
+    setTimeout(() => {
+      const luiza = document.getElementById("luiza");
+      luiza.style.display = "block";
+      animateLuiza();
+    }, 1000);
+  }
+
+  function animateLuiza() {
+    if (luizaX < posX - 130) {
+      luizaX += 1.5;
+      const lEl = document.getElementById("luiza");
+      lEl.style.left = luizaX + "px";
+      lEl.style.bottom = ground + "px";
+      lEl.style.transform = "scaleX(-1)";
+      requestAnimationFrame(animateLuiza);
+    } else {
+      showFinalDialog();
+    }
+  }
+
+  async function showFinalDialog() {
+    direction = -1;
+    updateVisuals();
+    await showDialog("PRINCESA LUIZA DIZ:", "Heitor! Obrigado por me salvar. Agora precisam de você em outro lugar. Vá! Corra!");
+    luizaEscape();
+  }
+
+  function luizaEscape() {
+    document.getElementById("luiza").style.transition = "all 1s ease-in";
+    document.getElementById("luiza").style.left = "-200px";
+    setTimeout(() => heitorEscape(), 1000);
+  }
+
+  function heitorEscape() {
+    clearInterval(diaperInterval);
+    document.querySelectorAll(".diaper").forEach(d => d.remove());
+    document.getElementById("tina").style.display = "none";
+    document.getElementById("luiza").style.display = "none";
+    battleActive = false;
+    gameActive = false;
+    cutsceneActive = true;
+    direction = 1;
+
+    const run = () => {
+      posX += 12;
+      updateVisuals();
+      if (posX < window.innerWidth + 200) {
+        requestAnimationFrame(run);
+      } else {
+        document.getElementById("heitor-container").style.display = "none";
+        cutsceneActive = false;
+        iniciarTransicao();
+      }
+    };
+    run();
+  }
+
+  function iniciarTransicao() {
+    gameActive = false;
+    const gameScreen = document.getElementById("game-screen");
+    gameScreen.style.background = "#000000";
+    setTimeout(() => {
+      gameScreen.style.background = '#87CEEB url("background_1.png") no-repeat bottom center';
+      gameScreen.style.backgroundSize = "cover";
+      posX = -150;
+      posY = ground;
+      velocityX = 0;
+      velocityY = 0;
+
+      setTimeout(() => {
+        const heitorContainer = document.getElementById("heitor-container");
+        heitorContainer.style.display = "block";
+        heitorContainer.style.transition = "none";
+        updateVisuals();
+
+        cutsceneActive = true;
+        const enterGame = () => {
+          posX += 5;
+          updateVisuals();
+          if (posX < window.innerWidth * 0.4) {
+            requestAnimationFrame(enterGame);
+          } else {
+            cutsceneActive = false;
+            setTimeout(() => {
+              level2Active = true;
+              gameActive = true;
+              gameLoop();
+              showLevel2Intro();
+            }, 300);
+          }
+        };
+        enterGame();
+      }, 800);
+    }, 300);
+  }
+
+  async function showLevel2Intro() {
+    const box = document.getElementById("dialog-box");
+    box.style.display = "block";
+    document.getElementById("dialog-title").innerText = "🏞️ NOVA ÁREA";
+    document.getElementById("dialog-text").innerText = "Heitor avançou! Mas sua aventura não termina aqui...";
+    document.getElementById("dialog-hint").style.display = "none";
+    
+    dialogWaitingForInput = true;
+    await new Promise((resolve) => {
+      const handleInput = (e) => {
+        if (e.key.toLowerCase() === 'e' && dialogWaitingForInput) {
+          dialogWaitingForInput = false;
+          document.removeEventListener("keydown", handleInput);
+          box.style.display = "none";
+          resolve();
+        }
+      };
+      document.addEventListener("keydown", handleInput);
+    });
+    
+    appearLauraAndTinaTriste();
+  }
+
+  function appearLauraAndTinaTriste() {
+    gameActive = false;
+    const laura = document.getElementById("laura");
+    const tinatriste = document.getElementById("tinatriste");
+    laura.style.display = "block";
+    tinatriste.style.display = "block";
+    
+    lauraX = window.innerWidth + 100;
+    lauraY = ground;
+    let tinasX = window.innerWidth + 300;
+    
+    const animarEntrada = () => {
+      lauraX -= 4;
+      tinasX -= 4;
+      laura.style.left = lauraX + "px";
+      laura.style.bottom = ground + "px";
+      laura.style.transform = "scaleX(-1)";
+      tinatriste.style.left = tinasX + "px";
+      tinatriste.style.bottom = ground + "px";
+      tinatriste.style.transform = "scaleX(-1)";
+      
+      if (lauraX > posX + 150) {
+        requestAnimationFrame(animarEntrada);
+      } else {
+        showLauraFirstDialog();
+      }
+    };
+    animarEntrada();
+  }
+
+  async function showLauraFirstDialog() {
+    await showDialog("LAURA DIZ:", "Como ousa bater na minha GATA!!! Você sofrerá.");
+    showLauraSecondDialog();
+  }
+
+  async function showLauraSecondDialog() {
+    await showDialog("LAURA DIZ:", "Vou fazer cocegas em você. VAMOS DUELAR!!");
+    showPokemonIntro();
+  }
+
+  function showPokemonIntro() {
+    const intro = document.getElementById("pokemon-intro");
+    intro.style.display = "flex";
+    document.getElementById("laura-intro").style.transform = "scaleX(-1)";
+    document.getElementById("duelar-btn").onclick = () => {
+      intro.style.display = "none";
+      iniciarJokenpo();
+    };
+  }
+
+  function iniciarJokenpo() {
+    jokenpoEmAndamento = true;
+    gameActive = false;
+    level2Active = false;
+    document.getElementById("jokenpo-interface").style.display = "block";
+    jokenpoHeitorVitorias = 0;
+    jokenpoLauraVitorias = 0;
+    jokenpoAtivo = true;
+    
+    somPrincipal.pause();
+    somPrincipal.currentTime = 0;
+    somjokenpo.currentTime = 0;
+    somjokenpo.play().catch(e => console.log("Som jokenpo não disponível"));
+    
+    posX = window.innerWidth * 0.2;
+    lauraX = window.innerWidth * 0.7;
+    updateVisuals();
+    document.getElementById("laura").style.left = lauraX + "px";
+    document.getElementById("laura").style.transform = "scaleX(-1)";
+    atualizarVidasJokenpo();
+  }
+
+  function atualizarVidasJokenpo() {
+    const heitorLives = document.getElementById("heitor-lives");
+    const lauraLives = document.getElementById("laura-lives");
+    heitorLives.innerHTML = "";
+    lauraLives.innerHTML = "";
+
+    for (let i = 0; i < 3; i++) {
+      const h = document.createElement("div");
+      h.className = "life-indicator" + (i < jokenpoHeitorVitorias ? " won" : "");
+      heitorLives.appendChild(h);
+
+      const l = document.createElement("div");
+      l.className = "life-indicator" + (i < jokenpoLauraVitorias ? " won" : "");
+      lauraLives.appendChild(l);
+    }
+  }
+
+  function jogar(escolha) {
+    if (jokenpoJogado || !jokenpoAtivo) return;
+    jokenpoJogado = true;
+    desabilitarBotoes();
+
+    const escolhas = ['pedra', 'papel', 'tesoura'];
+    const escolhaLaura = escolhas[Math.floor(Math.random() * 3)];
+    const imagensPaths = { pedra: 'pedra.png', papel: 'papel.png', tesoura: 'tesoura.png' };
+
+    const heitorDisplay = document.getElementById("heitor-choice-display");
+    heitorDisplay.innerHTML = `<img src="${imagensPaths[escolha]}" alt="${escolha}">`;
+    heitorDisplay.classList.add("selected");
+    setTimeout(() => {
+      const lauraDisplay = document.getElementById("laura-choice-display");
+      lauraDisplay.innerHTML = `<img src="${imagensPaths[escolhaLaura]}" alt="${escolhaLaura}">`;
+      lauraDisplay.classList.add("selected");
+      setTimeout(() => determinarVencedor(escolha, escolhaLaura), 800);
+    }, 600);
+  }
+
+  function jogarPedra() { jogar('pedra'); }
+  function jogarPapel() { jogar('papel'); }
+  function jogarTesoura() { jogar('tesoura'); }
+
+  function determinarVencedor(h, l) {
+    const resultsDiv = document.getElementById("jokenpo-result");
+
+    if (h === l) {
+      resultsDiv.textContent = "EMPATE! Joguem novamente!";
+      setTimeout(() => {
+        limparJokenpo();
+        jokenpoJogado = false;
+        habilitarBotoes();
+      }, 2000);
+      return;
+    }
+
+    if ((h === 'pedra' && l === 'tesoura') ||
+        (h === 'papel' && l === 'pedra') ||
+        (h === 'tesoura' && l === 'papel')) {
+      jokenpoHeitorVitorias++;
+      resultsDiv.textContent = "HEITOR VENCE! 🎉";
+      somcocegas.currentTime = 0;
+      somcocegas.play().catch(e => console.log("Som cocegas não disponível"));
+      aplicarCocegasLaura();
+    } else {
+      jokenpoLauraVitorias++;
+      resultsDiv.textContent = "LAURA VENCE! 💪";
+      somcocegas.currentTime = 0;
+      somcocegas.play().catch(e => console.log("Som cocegas não disponível"));
+      aplicarCocegasHeitor();
+    }
+
+    atualizarVidasJokenpo();
+
+    setTimeout(() => {
+      if (jokenpoHeitorVitorias === 3) {
+        finalizarJokenpo("HEITOR");
+      } else if (jokenpoLauraVitorias === 3) {
+        finalizarJokenpo("LAURA");
+      } else {
+        limparJokenpo();
+        jokenpoJogado = false;
+        habilitarBotoes();
+      }
+    }, 2000);
+  }
+
+  function aplicarCocegasHeitor() {
+    const heitorEl = document.getElementById("heitor");
+    heitorEl.classList.add("shake-animation");
+    setTimeout(() => {
+      heitorEl.classList.remove("shake-animation");
+    }, 2500);
+  }
+
+  function aplicarCocegasLaura() {
+    const lauraEl = document.getElementById("laura");
+    lauraEl.classList.add("shake-animation");
+    setTimeout(() => {
+      lauraEl.classList.remove("shake-animation");
+    }, 2500);
+  }
+
+  function limparJokenpo() {
+    document.getElementById("heitor-choice-display").innerHTML = "?";
+    document.getElementById("heitor-choice-display").classList.remove("selected");
+    document.getElementById("laura-choice-display").innerHTML = "?";
+    document.getElementById("laura-choice-display").classList.remove("selected");
+    document.getElementById("jokenpo-result").textContent = "";
+  }
+
+  function desabilitarBotoes() {
+    document.getElementById("btn-pedra").disabled = true;
+    document.getElementById("btn-papel").disabled = true;
+    document.getElementById("btn-tesoura").disabled = true;
+  }
+
+  function habilitarBotoes() {
+    document.getElementById("btn-pedra").disabled = false;
+    document.getElementById("btn-papel").disabled = false;
+    document.getElementById("btn-tesoura").disabled = false;
+  }
+
+  function finalizarJokenpo(vencedor) {
+    document.getElementById("jokenpo-result").textContent = vencedor + " VENCE A BATALHA!";
+    desabilitarBotoes();
+    jokenpoAtivo = false;
+
+    setTimeout(() => {
+      somjokenpo.pause();
+      somjokenpo.currentTime = 0;
+      document.getElementById("jokenpo-interface").style.display = "none";
+      jokenpoEmAndamento = false;
+      
+      somPrincipal.currentTime = 0;
+      somPrincipal.play().catch(e => console.log("Música principal não disponível"));
+      
+      if (vencedor === "HEITOR") {
+        showHeitorVictoryScreen();
+      } else if (vencedor === "LAURA") {
+        showLauraVictoryScreen();
+      }
+    }, 3000);
+  }
+
+  async function showHeitorVictoryScreen() {
+    await showDialog("LAURA DIZ:", "Você teve sorte! Te deixo passar.");
+    showLauraFinalDialog();
+  }
+
+  async function showLauraVictoryScreen() {
+    await showDialog("LAURA DIZ:", "HA HA HA! Ganhei!");
+    showLauraFinalDialog();
+  }
+
+  async function showLauraFinalDialog() {
+    await showDialog("LAURA DIZ:", "Passe Heitor, LUIZA! VEM AQUI!!");
+    lauraAndTinaSaidaCena();
+  }
+
+  function lauraAndTinaSaidaCena() {
+    gameActive = false;
+    cutsceneActive = true;
+    level2Active = false;
+
+    const laura = document.getElementById("laura");
+    const tinatriste = document.getElementById("tinatriste");
+
+    laura.style.transition = "all 1.5s ease-in";
+    tinatriste.style.transition = "all 1.5s ease-in";
+
+    laura.style.left = "-300px";
+    tinatriste.style.left = "-300px";
+
+    setTimeout(() => {
+      laura.style.display = "none";
+      tinatriste.style.display = "none";
+      heitorSaidaCenaLevel2();
+    }, 1500);
+  }
+
+  function heitorSaidaCenaLevel2() {
+    direction = 1;
+    updateVisuals();
+
+    const run = () => {
+      posX += 12;
+      updateVisuals();
+
+      if (posX < window.innerWidth + 200) {
+        requestAnimationFrame(run);
+      } else {
+        document.getElementById("heitor-container").style.display = "none";
+        cutsceneActive = false;
+        iniciarTransicaoLevel3();
+      }
+    };
+
+    run();
+  }
+
+  function iniciarTransicaoLevel3() {
+    gameActive = false;
+    cutsceneActive = true;
+    battleActive = false;
+    level2Active = false;
+
+    const gameScreen = document.getElementById("game-screen");
+    gameScreen.style.transition = "none";
+    gameScreen.style.background = "#000000";
+
+    setTimeout(() => {
+      gameScreen.style.transition = "background 1.5s ease-in-out";
+      gameScreen.style.background = '#87CEEB url("background_2.png") no-repeat bottom center';
+      gameScreen.style.backgroundSize = "cover";
+
+      ground = window.innerHeight * 0.40;
+      posY = ground;
+      posX = -150;
+      velocityX = 0;
+      velocityY = 0;
+      direction = 1;
+      isJumping = false;
+      coyoteTime = 0;
+      jumpBuffer = 0;
+
+      setTimeout(() => {
+        const heitorContainer = document.getElementById("heitor-container");
+        heitorContainer.style.display = "block";
+        heitorContainer.style.transition = "none";
+        heitorContainer.style.opacity = "1";
+        updateVisuals();
+
+        cutsceneActive = true;
+        const enterGame = () => {
+          posX += 5;
+          updateVisuals();
+          
+          if (posX < window.innerWidth * 0.4) {
+            requestAnimationFrame(enterGame);
+          } else {
+            cutsceneActive = false;
+            setTimeout(() => {
+              gameScreen.style.transition = "none";
+              level3Active = true;
+              gameActive = false;
+              appearVodidi();
+            }, 300);
+          }
+        };
+
+        enterGame();
+
+      }, 800);
+
+    }, 300);
+  }
+
+  function appearVodidi() {
+    const vodidi = document.getElementById("vodidi");
+    
+    vodidi.style.display = "block";
+    
+    vodidiX = window.innerWidth + 100;
+    vodidiY = ground - 140;
+    
+    const animarEntrada = () => {
+      vodidiX -= 4;
+      
+      vodidi.style.left = vodidiX + "px";
+      vodidi.style.bottom = vodidiY + "px";
+      vodidi.style.transform = "scaleX(1)";
+      
+      if (vodidiX > posX + 250) {
+        requestAnimationFrame(animarEntrada);
+      } else {
+        vodidiX = posX + 250;
+        
+        vodidi.style.left = vodidiX + "px";
+        vodidi.style.bottom = vodidiY + "px";
+        vodidi.style.transform = "scaleX(1)";
+        
+        showVodidiDialog();
+      }
+    };
+    animarEntrada();
+  }
+
+  async function showVodidiDialog() {
+    await showDialog("VOVÓ DIDI DIZ:", "Olá, nobre guerreiro! Aproxime-se.");
+    gameActive = true;
+    gameLoop();
+  }
+
+  function updateVisuals() {
+    const hContainer = document.getElementById("heitor-container");
+    hContainer.style.left = posX + "px";
+    hContainer.style.bottom = posY + "px";
+    hContainer.style.transform = `scaleX(${-direction})`;
+    updateHeitorFrame();
+  }
+
+  function gameLoop() {
+    if (!gameActive) return;
+    
+    if (level3Active && !vodidiInteractionActive && !vodidiInteractionCompleted) {
+      verificarProximidadeVodidi();
+    }
+
+    if (level4Active && !vodecoDInteractionActive && !vodecoDInteractionCompleted) {
+      verificarProximidadeVodeco();
+    }
+
+    if (level5Active && !tiaDDialogInicial && !tiaDInteractionCompleted) {
+      verificarProximidadeTiaDInicial();
+    }
+
+    if (level5Active && tiaDInteractionCompleted && !tiaDInteractionActive) {
+      verificarProximidadeTiaDInteracao();
+    }
+
+    if (level5Active && tioGuigoInteractionCompleted === false) {
+      verificarProximidadeTioGuigo();
+    }
+    
+    if (level3Active && exitArrowVisible) {
+      verificarSaidaLevel3();
+    }
+
+    if (level4Active && exitArrowVisible) {
+      verificarSaidaLevel4();
+    }
+
+    if (level5Active && exitArrowVisible) {
+      verificarSaidaLevel5();
+    }
+    
+    if ((battleActive && !level2Active) || level2Active || level3Active || level4Active || level5Active) {
+      if (keys["a"] || keys["A"]) { 
+        velocityX -= accel; 
+        direction = -1; 
+      }
+      else if (keys["d"] || keys["D"]) { 
+        velocityX += accel; 
+        direction = 1; 
+      }
+      else { 
+        velocityX *= friction; 
+      }
+      
+      velocityX = Math.max(-maxSpeed, Math.min(maxSpeed, velocityX));
+      posX += velocityX;
+      if (posX < 0) posX = 0;
+      if (posX > window.innerWidth - 100) posX = window.innerWidth - 100;
+      
+      if (posY <= ground) { coyoteTime = 8; isJumping = false; }
+      else { coyoteTime--; }
+      if (jumpBuffer > 0 && coyoteTime > 0) { velocityY = jumpForce; isJumping = true; jumpBuffer = 0; coyoteTime = 0; }
+      if (jumpBuffer > 0) jumpBuffer--;
+      velocityY -= gravity;
+      posY += velocityY;
+      if (posY <= ground) { posY = ground; velocityY = 0; }
+      
+      updateVisuals();
+    }
+    
+    if (battleActive && !level2Active) {
+      tinaX += (tinaX < posX) ? 3.8 : -3.8;
+      tinaX = Math.max(0, Math.min(tinaX, window.innerWidth - 100));
+      
+      if (Math.random() < 0.015 && tinaY <= ground) tinaVY = 15;
+      tinaVY -= gravity;
+      tinaY += tinaVY;
+      if (tinaY <= ground) { tinaY = ground; tinaVY = 0; }
+      
+      if (Math.abs(posX - tinaX) < 60 && Math.abs(posY - tinaY) < 60) {
+        heitorHP -= 0.015;
+        updateHUD();
+        if (heitorHP <= 0) {
+          gameActive = false;
+          battleActive = false;
+        }
+      }
+      
+      const tEl = document.getElementById("tina");
+      tEl.style.left = tinaX + "px";
+      tEl.style.bottom = tinaY + "px";
+      tEl.style.transform = `scaleX(${tinaX < posX ? -1 : 1})`;
+    }
+
+    if (level5Active) {
+      const tiad = document.getElementById("tiad");
+      const tioguigo = document.getElementById("tioguigo");
+      tiad.style.zIndex = posX > tiaDX ? 4 : 2;
+      tioguigo.style.zIndex = posX > tioGuigoDX ? 4 : 2;
+    }
+    
+    requestAnimationFrame(gameLoop);
+  }
+
+  diaperInterval = setInterval(() => {
+    if (battleActive) {
+      const d = document.createElement("img");
+      d.src = "fralda.png";
+      d.classList.add("diaper");
+      d.style.left = Math.random() * 100 + "vw";
+      d.style.animationDuration = (3 + Math.random() * 4) + "s";
+      document.getElementById("game-screen").appendChild(d);
+      setTimeout(() => d.remove(), 7000);
+    }
+  }, 600);
+
+  function verificarProximidadeVodidi() {
+    const distancia = Math.abs(posX - vodidiX);
+    const prompt = document.getElementById("interaction-prompt");
+    
+    if (vodidiInteractionCompleted) {
+      prompt.style.display = "none";
+      return;
+    }
+    
+    if (distancia < 200) {
+      prompt.style.display = "block";
+      prompt.style.left = (vodidiX - 120) + "px";
+      prompt.style.bottom = (vodidiY + 250) + "px";
+    } else {
+      prompt.style.display = "none";
+    }
+  }
+
+  function iniciarInteracaoVodidi() {
+    if (!level3Active || vodidiInteractionActive || vodidiInteractionCompleted) return;
+    
+    const distancia = Math.abs(posX - vodidiX);
+    if (distancia < 200) {
+      vodidiInteractionActive = true;
+      gameActive = false;
+      document.getElementById("interaction-prompt").style.display = "none";
+      document.getElementById("choice-menu").style.display = "block";
+    }
+  }
+
+  function escolherChurros(opcao) {
+    const choiceMenu = document.getElementById("choice-menu");
+    choiceMenu.style.display = "none";
+    
+    if (opcao === 'sim') {
+      setTimeout(() => {
+        showDialog("VÓ DIDI DIZ:", "Que ótimo! Olhe o cardápio.").then(() => {
+          document.getElementById("churros-menu").style.display = "flex";
+        });
+      }, 300);
+    } else if (opcao === 'nao') {
+      setTimeout(() => {
+        showDialog("VÓ DIDI DIZ:", "Hummm... você tem certeza?").then(() => {
+          mostrarConfirmacaoChurros();
+        });
+      }, 300);
+    }
+  }
+
+  function mostrarConfirmacaoChurros() {
+    const choiceMenu = document.getElementById("choice-menu");
+    const p = choiceMenu.querySelector("p");
+    
+    p.innerText = "Tem certeza de que não quer?";
+    choiceMenu.style.display = "block";
+    
+    const buttonsDiv = choiceMenu.querySelector(".choice-buttons");
+    buttonsDiv.innerHTML = "";
+    
+    const btn1 = document.createElement("button");
+    btn1.className = "choice-btn";
+    btn1.innerText = "Pensando bem... Quero um!";
+    btn1.onclick = () => {
+      choiceMenu.style.display = "none";
+      setTimeout(() => {
+        showDialog("VÓ DIDI DIZ:", "Que ótimo! Olhe o cardápio.").then(() => {
+          document.getElementById("churros-menu").style.display = "flex";
+        });
+      }, 300);
+    };
+    
+    const btn2 = document.createElement("button");
+    btn2.className = "choice-btn";
+    btn2.innerText = "Sim, tenho certeza!";
+    btn2.onclick = () => {
+      choiceMenu.style.display = "none";
+      setTimeout(() => {
+        showDialog("VÓ DIDI DIZ:", "Pelo amor da Quitá! Que pena.").then(() => {
+          finalizarChurrosEvent();
+        });
+      }, 300);
+    };
+    
+    buttonsDiv.appendChild(btn1);
+    buttonsDiv.appendChild(btn2);
+  }
+
+  function escolherChurro(tipo) {
+    document.getElementById("churros-menu").style.display = "none";
+    churrosEscolhido = tipo;
+    
+    somComer.currentTime = 0;
+    somComer.play().catch(e => console.log("Som comer não disponível"));
+    
+    if (tipo === 'doce') {
+      setTimeout(() => {
+        showDialog("HEITOR COMEU:", "Ahhh, que delícia! Este doce de leite é simplesmente perfeito! 😍").then(() => {
+          finalizarChurrosEvent();
+        });
+      }, 300);
+    } else if (tipo === 'nutella') {
+      setTimeout(() => {
+        showDialog("HEITOR COMEU:", "Meu Deus! Este churro de Nutella é SENSACIONAL! Que sabor indescritível! 🤤").then(() => {
+          finalizarChurrosEvent();
+        });
+      }, 300);
+    }
+  }
+
+  function recusarChurrosAposMenu() {
+    document.getElementById("churros-menu").style.display = "none";
+    setTimeout(() => {
+      showDialog("HEITOR DISSE:", "Vou recusar... desculpa, Vó Didi!").then(() => {
+        finalizarChurrosEvent();
+      });
+    }, 300);
+  }
+
+  function finalizarChurrosEvent() {
+    vodidiInteractionActive = false;
+    vodidiInteractionCompleted = true;
+    document.getElementById("interaction-prompt").style.display = "none";
+    exitArrowVisible = true;
+    document.getElementById("exit-arrow").style.display = "block";
+    gameActive = true;
+    gameLoop();
+  }
+
+  function verificarSaidaLevel3() {
+    if (!canExitLevel3) {
+      if (posX > window.innerWidth - 200) {
+        gameActive = false;
+        document.getElementById("exit-arrow").style.display = "none";
+        mostrarChamadaVodidi();
+      }
+    } else {
+      if (posX >= window.innerWidth - 100) {
+        iniciarTransicaoLevel4();
+      }
+    }
+  }
+
+  function mostrarChamadaVodidi() {
+    const choiceMenu = document.getElementById("choice-menu");
+    const h3 = choiceMenu.querySelector("h3");
+    const p = choiceMenu.querySelector("p");
+    
+    h3.innerText = "🎁 VÓ DIDI DIZ 🎁";
+    p.innerText = "ESPERE! [Aperte E]";
+    choiceMenu.style.display = "block";
+    
+    const buttonsDiv = choiceMenu.querySelector(".choice-buttons");
+    buttonsDiv.innerHTML = "";
+    
+    let waitingForE = false;
+    
+    const handleKeyPress = (e) => {
+      if (e.key.toLowerCase() === 'e' && !waitingForE) {
+        waitingForE = true;
+        document.removeEventListener("keydown", handleKeyPress);
+        choiceMenu.style.display = "none";
+        receberCarta();
+      }
+    };
+    
+    document.addEventListener("keydown", handleKeyPress);
+  }
+
+  function receberCarta() {
+    setTimeout(() => {
+      showDialog("VÓ DIDI DIZ:", "TOME PARA VOCÊ ISTO, EU GOSTEI MUITO DE VOCÊ JOVEM, LEMBRA MEU NETO.").then(() => {
+        inventoryItems[0] = 'carta';
+        inventoryUnlocked = true;
+        canExitLevel3 = true;
+        
+        mostrarNotificacaoInventario();
+        
+        setTimeout(() => {
+          document.getElementById("exit-arrow").style.display = "block";
+          gameActive = true;
+          gameLoop();
+        }, 2000);
+      });
+    }, 300);
+  }
+
+  function mostrarNotificacaoInventario() {
+    const notification = document.getElementById("inventory-notification");
+    notification.innerHTML = "✨ INVENTÁRIO DESBLOQUEADO! Pressione [I] para abrir";
+    notification.style.display = "block";
+    
+    document.getElementById("inventory-button").style.display = "block";
+    
+    setTimeout(() => {
+      notification.style.display = "none";
+    }, 5000);
+  }
+
+  function iniciarTransicaoLevel4() {
+    gameActive = false;
+    cutsceneActive = true;
+    level3Active = false;
+    
+    document.getElementById("vodidi").style.display = "none";
+    document.getElementById("exit-arrow").style.display = "none";
+    document.getElementById("interaction-prompt").style.display = "none";
+    
+    const gameScreen = document.getElementById("game-screen");
+    gameScreen.style.transition = "none";
+    gameScreen.style.background = "#000000";
+
+    setTimeout(() => {
+      gameScreen.style.transition = "background 1.5s ease-in-out";
+      gameScreen.style.background = '#87CEEB url("background_3.png") no-repeat bottom center';
+      gameScreen.style.backgroundSize = "cover";
+
+      ground = window.innerHeight * 0.40;
+      posY = ground + 30;
+      posX = -150;
+      velocityX = 0;
+      velocityY = 0;
+      direction = 1;
+      isJumping = false;
+      coyoteTime = 0;
+      jumpBuffer = 0;
+
+      setTimeout(() => {
+        const heitorContainer = document.getElementById("heitor-container");
+        heitorContainer.style.display = "block";
+        heitorContainer.style.transition = "none";
+        updateVisuals();
+
+        cutsceneActive = true;
+        const enterGame = () => {
+          posX += 5;
+          updateVisuals();
+          
+          if (posX < window.innerWidth * 0.4) {
+            requestAnimationFrame(enterGame);
+          } else {
+            cutsceneActive = false;
+            setTimeout(() => {
+              gameScreen.style.transition = "none";
+              level4Active = true;
+              gameActive = true;
+              appearVodeco();
+              gameLoop();
+            }, 300);
+          }
+        };
+
+        enterGame();
+
+      }, 800);
+
+    }, 300);
+  }
+
+  function appearVodeco() {
+    const vodeco = document.getElementById("vodeco");
+    const violao = document.getElementById("violao");
+    
+    vodeco.style.display = "block";
+    violao.style.display = "block";
+    
+    vodecoDX = posX + 350;
+    vodecoDY = ground - 140;
+    violaoX = vodecoDX + 55;
+    violaoY = vodecoDY + 50;
+    
+    vodeco.style.left = vodecoDX + "px";
+    vodeco.style.bottom = vodecoDY + "px";
+    vodeco.style.transform = "scaleX(1)";
+    
+    violao.style.left = violaoX + "px";
+    violao.style.bottom = violaoY + "px";
+  }
+
+  function verificarProximidadeVodeco() {
+    const distancia = Math.abs(posX - vodecoDX);
+    const prompt = document.getElementById("interaction-prompt");
+    
+    if (vodecoDInteractionCompleted) {
+      prompt.style.display = "none";
+      return;
+    }
+    
+    if (distancia < 200) {
+      prompt.style.display = "block";
+      prompt.style.left = (vodecoDX - 120) + "px";
+      prompt.style.bottom = (vodecoDY + 250) + "px";
+    } else {
+      prompt.style.display = "none";
+    }
+  }
+
+  function iniciarInteracaoVodeco() {
+    if (!level4Active || vodecoDInteractionActive || vodecoDInteractionCompleted) return;
+    
+    const distancia = Math.abs(posX - vodecoDX);
+    if (distancia < 200) {
+      vodecoDInteractionActive = true;
+      gameActive = false;
+      document.getElementById("interaction-prompt").style.display = "none";
+      
+      showDialog("VÓ DECO DIZ:", "Olá jovem guerreiro! Tudo bem?").then(() => {
+        showDialog("VÓ DECO DIZ:", "Somos nobres andarilhos e adoramos música! Você sabe tocar?").then(() => {
+          mostrarOpcoesMusicaVodeco();
+        });
+      });
+    }
+  }
+
+  function mostrarOpcoesMusicaVodeco() {
+    const choiceMenu = document.getElementById("choice-menu");
+    const h3 = choiceMenu.querySelector("h3");
+    const p = choiceMenu.querySelector("p");
+    
+    h3.innerText = "🎸 VÓ DECO PERGUNTA 🎸";
+    p.innerText = "Você sabe tocar?";
+    choiceMenu.style.display = "block";
+    
+    const buttonsDiv = choiceMenu.querySelector(".choice-buttons");
+    buttonsDiv.innerHTML = "";
+    
+    const btn1 = document.createElement("button");
+    btn1.className = "choice-btn";
+    btn1.innerText = "Sim! Claro!";
+    btn1.onclick = () => pegarViolao('sim');
+    
+    const btn2 = document.createElement("button");
+    btn2.className = "choice-btn";
+    btn2.innerText = "Não, desculpa...";
+    btn2.onclick = () => pegarViolao('nao');
+    
+    buttonsDiv.appendChild(btn1);
+    buttonsDiv.appendChild(btn2);
+  }
+
+  function pegarViolao(resposta) {
+    const choiceMenu = document.getElementById("choice-menu");
+    choiceMenu.style.display = "none";
+    violaoRespostaUsuario = resposta;
+    
+    if (resposta === 'sim') {
+      setTimeout(() => {
+        showDialog("VÓ DECO DIZ:", "Pegue o violão!").then(() => {
+          violaoDesbloqueado = true;
+          telaViolaoAberta = true;
+          somPrincipal.pause();
+          somPrincipal.currentTime = 0;
+          document.getElementById("violao-screen").style.display = "flex";
+          atualizarBotaoViolao('sim');
+        });
+      }, 300);
+    } else if (resposta === 'nao') {
+      setTimeout(() => {
+        showDialog("VÓ DECO DIZ:", "Humm, mas pegue mesmo assim, fica bem em você.").then(() => {
+          violaoDesbloqueado = true;
+          telaViolaoAberta = true;
+          somPrincipal.pause();
+          somPrincipal.currentTime = 0;
+          document.getElementById("violao-screen").style.display = "flex";
+          atualizarBotaoViolao('nao');
+        });
+      }, 300);
+    }
+  }
+
+  function atualizarBotaoViolao(tipo) {
+    const btn = document.querySelector(".btn-solta-som");
+    if (tipo === 'sim') {
+      btn.innerText = "🎸 SOLTA O SOM! 🎸";
+      btn.onclick = () => tocandoViolao();
+    } else if (tipo === 'nao') {
+      btn.innerText = "Você não sabe tocar... 😅";
+      btn.onclick = () => fecharTelaViolaoSemTocar();
+    }
+  }
+
+  function tocandoViolao() {
+    const btn = document.querySelector(".btn-solta-som");
+    btn.disabled = true;
+    
+    somviolao.currentTime = 0;
+    somviolao.play().catch(e => console.log("Som violão não disponível"));
+    
+    const textoBotaoAnterior = btn.innerText;
+    btn.innerText = "🎵 Tocando... 🎵";
+    
+    setTimeout(() => {
+      somviolao.pause();
+      somviolao.currentTime = 0;
+      btn.innerText = textoBotaoAnterior;
+      btn.disabled = false;
+    }, 10000);
+  }
+
+  function fecharTelaViolao() {
+    somviolao.pause();
+    somviolao.currentTime = 0;
+    document.getElementById("violao-screen").style.display = "none";
+    telaViolaoAberta = false;
+    
+    somPrincipal.currentTime = 0;
+    somPrincipal.play().catch(e => console.log("Música principal não disponível"));
+    
+    setTimeout(() => {
+      if (violaoRespostaUsuario === 'sim') {
+        showDialog("VÓ DECO DIZ:", "Nossa! Você toca muito bem.").then(() => {
+          showDialog("VÓ DECO DIZ:", "Toca como meu filho! Fique com o violão.").then(() => {
+            finalizarViolaoEvent();
+          });
+        });
+      } else if (violaoRespostaUsuario === 'nao') {
+        showDialog("VÓ DECO DIZ:", "Que pena, mas fique para você, quem sabe aprende a tocar como meu filho!").then(() => {
+          finalizarViolaoEvent();
+        });
+      }
+    }, 300);
+  }
+
+  function fecharTelaViolaoSemTocar() {
+    somviolao.pause();
+    somviolao.currentTime = 0;
+    document.getElementById("violao-screen").style.display = "none";
+    telaViolaoAberta = false;
+    
+    somPrincipal.currentTime = 0;
+    somPrincipal.play().catch(e => console.log("Música principal não disponível"));
+    
+    setTimeout(() => {
+      showDialog("VÓ DECO DIZ:", "Que pena, mas fique para você, quem sabe aprende a tocar como meu filho!").then(() => {
+        finalizarViolaoEvent();
+      });
+    }, 300);
+  }
+
+  function finalizarViolaoEvent() {
+    inventoryItems[1] = 'violao';
+    inventoryUnlocked = true;
+    
+    document.getElementById("violao").style.display = "none";
+    
+    const notification = document.getElementById("inventory-notification");
+    notification.innerHTML = "✨ VIOLÃO ADICIONADO AO INVENTÁRIO!";
+    notification.style.display = "block";
+    document.getElementById("inventory-button").style.display = "block";
+    
+    setTimeout(() => {
+      notification.style.display = "none";
+    }, 5000);
+    
+    canExitLevel4 = true;
+    exitArrowVisible = true;
+    document.getElementById("exit-arrow").style.display = "block";
+    
+    vodecoDInteractionActive = false;
+    vodecoDInteractionCompleted = true;
+    document.getElementById("interaction-prompt").style.display = "none";
+    violaoDesbloqueado = false;
+    gameActive = true;
+    gameLoop();
+  }
+
+  function verificarSaidaLevel4() {
+    if (posX >= window.innerWidth - 100) {
+      iniciarTransicaoLevel5();
+    }
+  }
+
+  // ========== NÍVEL 5 - TABERNA COM TIA D E TIO GUIGO ==========
+
+  function iniciarTransicaoLevel5() {
+    gameActive = false;
+    cutsceneActive = true;
+    level4Active = false;
+    
+    document.getElementById("vodeco").style.display = "none";
+    document.getElementById("violao").style.display = "none";
+    document.getElementById("exit-arrow").style.display = "none";
+    document.getElementById("interaction-prompt").style.display = "none";
+    
+    const gameScreen = document.getElementById("game-screen");
+    gameScreen.style.transition = "none";
+    gameScreen.style.background = "#000000";
+
+    setTimeout(() => {
+      gameScreen.style.transition = "background 1.5s ease-in-out";
+      gameScreen.style.background = '#87CEEB url("background_4.png") no-repeat bottom center';
+      gameScreen.style.backgroundSize = "cover";
+
+      ground = window.innerHeight * 0.40;
+      posY = ground - 50;
+      posX = -150;
+      velocityX = 0;
+      velocityY = 0;
+      direction = 1;
+      isJumping = false;
+      coyoteTime = 0;
+      jumpBuffer = 0;
+
+      setTimeout(() => {
+        const heitorContainer = document.getElementById("heitor-container");
+        heitorContainer.style.display = "block";
+        heitorContainer.style.transition = "none";
+        updateVisuals();
+
+        somPrincipal.pause();
+        somPrincipal.currentTime = 0;
+        
+        setTimeout(() => {
+          somTaberna.currentTime = 0;
+          somTaberna.play().catch(e => console.log("Música da taberna ainda não disponível"));
+        }, 100);
+
+        cutsceneActive = true;
+        const enterGame = () => {
+          posX += 5;
+          updateVisuals();
+          
+          if (posX < window.innerWidth * 0.25) {
+            requestAnimationFrame(enterGame);
+          } else {
+            cutsceneActive = false;
+            setTimeout(() => {
+              gameScreen.style.transition = "none";
+              level5Active = true;
+              gameActive = true;
+              posicionarNPCsLevel5();
+              gameLoop();
+            }, 300);
+          }
+        };
+
+        enterGame();
+
+      }, 800);
+
+    }, 300);
+  }
+
+  function posicionarNPCsLevel5() {
+    const tiad = document.getElementById("tiad");
+    const tioguigo = document.getElementById("tioguigo");
+    
+    tiad.style.display = "block";
+    tioguigo.style.display = "block";
+    
+    tiaDX = window.innerWidth * 0.35;
+    tiaDY = ground - 20;
+    
+    tioGuigoDX = window.innerWidth * 0.65;
+    tioGuigoDY = ground - 20;
+    
+    tiad.style.left = tiaDX + "px";
+    tiad.style.bottom = tiaDY + "px";
+    tiad.style.transform = "scaleX(-1)";
+    
+    tioguigo.style.left = tioGuigoDX + "px";
+    tioguigo.style.bottom = tioGuigoDY + "px";
+    tioguigo.style.transform = "scaleX(-1)";
+  }
+
+  function verificarProximidadeTiaDInicial() {
+    const distancia = Math.abs(posX - tiaDX);
+    
+    if (distancia < 250 && !tiaDDialogInicial) {
+      tiaDDialogInicial = true;
+      gameActive = false;
+      iniciarDialogoInicial();
+    }
+  }
+
+  async function iniciarDialogoInicial() {
+    await showDialog("TIA ANDREZA DIZ:", "Olá jovem guerreiro! Bem vindo a minha taberna.");
+    await showDialog("TIA ANDREZA DIZ:", "Desfrute das bebidas e do excelente pastel!");
+    
+    tiaDInteractionCompleted = true;
+    gameActive = true;
+    gameLoop();
+  }
+
+  function verificarProximidadeTiaDInteracao() {
+    const distancia = Math.abs(posX - tiaDX);
+    const prompt = document.getElementById("interaction-prompt");
+    
+    if (distancia < 200) {
+      prompt.style.display = "block";
+      prompt.style.left = (tiaDX - 120) + "px";
+      prompt.style.bottom = (tiaDY + 250) + "px";
+    } else {
+      prompt.style.display = "none";
+    }
+  }
+
+  function iniciarInteracaoTiaD() {
+    if (!level5Active || !tiaDInteractionCompleted || tiaDInteractionActive) return;
+    
+    const distancia = Math.abs(posX - tiaDX);
+    if (distancia < 200) {
+      tiaDInteractionActive = true;
+      gameActive = false;
+      document.getElementById("interaction-prompt").style.display = "none";
+      
+      showDialog("TIA ANDREZA DIZ:", "Queria cigarros melhores para fumar...").then(() => {
+        showDialog("TIA ANDREZA DIZ:", "Ei! Você é muito novo para fumar, eu não deveria falar disso com você.").then(() => {
+          finalizarInteracaoTiaD();
+        });
+      });
+    }
+  }
+
+  function finalizarInteracaoTiaD() {
+    tiaDInteractionActive = false;
+    gameActive = true;
+    gameLoop();
+  }
+
+  function verificarProximidadeTioGuigo() {
+    const distancia = Math.abs(posX - tioGuigoDX);
+    const prompt = document.getElementById("interaction-prompt");
+    
+    if (tioGuigoInteractionCompleted) {
+      prompt.style.display = "none";
+      return;
+    }
+    
+    if (distancia < 200) {
+      prompt.style.display = "block";
+      prompt.style.left = (tioGuigoDX - 120) + "px";
+      prompt.style.bottom = (tioGuigoDY + 250) + "px";
+    } else {
+      prompt.style.display = "none";
+    }
+  }
+
+  function iniciarInteracaoTioGuigo() {
+    if (!level5Active || tioGuigoInteractionActive || tioGuigoInteractionCompleted) return;
+    
+    const distancia = Math.abs(posX - tioGuigoDX);
+    if (distancia < 200) {
+      tioGuigoInteractionActive = true;
+      gameActive = false;
+      document.getElementById("interaction-prompt").style.display = "none";
+      
+      showDialog("TIO GUIGO DIZ:", "Funcionários! Eu estou tão irritado!").then(() => {
+        showDialog("TIO GUIGO DIZ:", "Ó que! Desculpe garoto, não te vi ai.").then(() => {
+          showDialog("TIO GUIGO DIZ:", "Esses funcionarios me tiram do serio! Hoje em dia é tão difícil ganhar um seudo dinheiro.").then(() => {
+            mostrarPerguntaPerfumeGuigo();
+          });
+        });
+      });
+    }
+  }
+
+  function mostrarPerguntaPerfumeGuigo() {
+    const choiceMenu = document.getElementById("choice-menu");
+    const h3 = choiceMenu.querySelector("h3");
+    const p = choiceMenu.querySelector("p");
+    
+    h3.innerText = "👃 TIO GUIGO DIZ 👃";
+    p.innerText = "Garoto, você está cheirando mal... O que acha de um perfume?";
+    choiceMenu.style.display = "block";
+    
+    const buttonsDiv = choiceMenu.querySelector(".choice-buttons");
+    buttonsDiv.innerHTML = "";
+    
+    const btn1 = document.createElement("button");
+    btn1.className = "choice-btn";
+    btn1.innerText = "Sim!";
+    btn1.onclick = () => escolherPerfumeGuigo('sim');
+    
+    const btn2 = document.createElement("button");
+    btn2.className = "choice-btn";
+    btn2.innerText = "Não!";
+    btn2.onclick = () => escolherPerfumeGuigo('nao');
+    
+    buttonsDiv.appendChild(btn1);
+    buttonsDiv.appendChild(btn2);
+  }
+
+  function escolherPerfumeGuigo(opcao) {
+    const choiceMenu = document.getElementById("choice-menu");
+    choiceMenu.style.display = "none";
+    
+    if (opcao === 'sim') {
+      setTimeout(() => {
+        showDialog("TIO GUIGO DIZ:", "Tome, você tem sorte que eu tenho uma fragrância extra aqui.").then(() => {
+          inventoryItems[2] = 'perfume';
+          mostrarNotificacaoPerfume();
+          finalizarInteracaoTioGuigo();
+        });
+      }, 300);
+    } else if (opcao === 'nao') {
+      setTimeout(() => {
+        showDialog("TIO GUIGO DIZ:", "Você tem certeza?? Tenho um perfume ótimo para você! É por conta da casa.").then(() => {
+          mostrarConfirmacaoPerfumeGuigo();
+        });
+      }, 300);
+    }
+  }
+
+  function mostrarConfirmacaoPerfumeGuigo() {
+    const choiceMenu = document.getElementById("choice-menu");
+    const p = choiceMenu.querySelector("p");
+    
+    p.innerText = "Tem certeza mesmo?";
+    choiceMenu.style.display = "block";
+    
+    const buttonsDiv = choiceMenu.querySelector(".choice-buttons");
+    buttonsDiv.innerHTML = "";
+    
+    const btn1 = document.createElement("button");
+    btn1.className = "choice-btn";
+    btn1.innerText = "Tá bem, vou aceitar!";
+    btn1.onclick = () => {
+      choiceMenu.style.display = "none";
+      setTimeout(() => {
+        showDialog("TIO GUIGO DIZ:", "Ótimo! Quando precisar estou aqui.").then(() => {
+          inventoryItems[2] = 'perfume';
+          mostrarNotificacaoPerfume();
+          finalizarInteracaoTioGuigo();
+        });
+      }, 300);
+    };
+    
+    const btn2 = document.createElement("button");
+    btn2.className = "choice-btn";
+    btn2.innerText = "Não, tenho certeza!";
+    btn2.onclick = () => {
+      choiceMenu.style.display = "none";
+      setTimeout(() => {
+        showDialog("TIO GUIGO DIZ:", "Ok, é de sua escolha feder!").then(() => {
+          finalizarInteracaoTioGuigo();
+        });
+      }, 300);
+    };
+    
+    buttonsDiv.appendChild(btn1);
+    buttonsDiv.appendChild(btn2);
+  }
+
+  function mostrarNotificacaoPerfume() {
+    const notification = document.getElementById("inventory-notification");
+    notification.innerHTML = "✨ PERFUME ADICIONADO AO INVENTÁRIO!";
+    notification.style.display = "block";
+    
+    setTimeout(() => {
+      notification.style.display = "none";
+    }, 5000);
+  }
+
+  function finalizarInteracaoTioGuigo() {
+    tioGuigoInteractionActive = false;
+    tioGuigoInteractionCompleted = true;
+    document.getElementById("interaction-prompt").style.display = "none";
+    exitArrowVisible = true;
+    document.getElementById("exit-arrow").style.display = "block";
+    gameActive = true;
+    gameLoop();
+  }
+
+  function verificarSaidaLevel5() {
+    if (posX >= window.innerWidth - 100) {
+      finalizarJogo();
+    }
+  }
+
+  function finalizarJogo() {
+    gameActive = false;
+    cutsceneActive = true;
+    level5Active = false;
+    
+    somTaberna.pause();
+    somTaberna.currentTime = 0;
+    
+    const gameScreen = document.getElementById("game-screen");
+    gameScreen.style.background = "#000000";
+    
+    setTimeout(() => {
+      const dialogBox = document.getElementById("dialog-box");
+      dialogBox.style.display = "block";
+      
+      showDialog("🏆 FIM DA AVENTURA 🏆", 
+                 "Você completou uma jornada épica, Heitor!\n\nVocê enfrentou desafios, fez novos amigos e descobriu o verdadeiro valor da amizade e coragem.\n\nQue sua próxima aventura seja ainda maior!\n\nTE AMAMOS, HEITOR! 💖").then(() => {
+        dialogBox.style.display = "none";
+        voltarAoMenu();
+      });
+    }, 1000);
+  }
+
+  function voltarAoMenu() {
+    stage = 0;
+    gameActive = false;
+    battleActive = false;
+    level2Active = false;
+    level3Active = false;
+    level4Active = false;
+    level5Active = false;
+    
+    posX = window.innerWidth * 0.4;
+    posY = -300;
+    ground = window.innerHeight * 0.40;
+    
+    inventoryUnlocked = true;
+    
+    document.getElementById("game-screen").style.display = "none";
+    document.getElementById("menu-screen").style.display = "flex";
+    
+    somMenu.pause();
+    somPrincipal.pause();
+    somTaberna.pause();
+    somBatalha.pause();
+    somjokenpo.pause();
+    
+    somMenu.currentTime = 0;
+    somPrincipal.currentTime = 0;
+    somTaberna.currentTime = 0;
+    somBatalha.currentTime = 0;
+    somjokenpo.currentTime = 0;
+    
+    somMenu.play().catch(e => console.log("Música do menu não disponível"));
+  }
+
+  // ========== INVENTÁRIO ==========
+
+  function abrirInventario() {
+    if (!inventoryUnlocked) return;
+    
+    const panel = document.getElementById("inventory-panel");
+    panel.style.display = "block";
+    
+    const grid = document.getElementById("inventory-grid");
+    grid.innerHTML = "";
+    
+    for (let i = 0; i < 7; i++) {
+      const slot = document.createElement("div");
+      slot.className = "inventory-slot";
+      
+      if (inventoryItems[i]) {
+        slot.classList.remove("empty");
+        slot.innerHTML = `<img src="${inventoryItems[i]}.png" alt="${inventoryItems[i]}">`;
+        slot.onclick = () => abrirViewerItem(i);
+      } else {
+        slot.classList.add("empty");
+        slot.innerHTML = "";
+      }
+      
+      grid.appendChild(slot);
+    }
+    
+    document.getElementById("inventory-description").innerText = "Selecione um item para ver a descrição";
+  }
+
+  function abrirViewerItem(index) {
+    if (!inventoryItems[index]) return;
+    
+    const item = inventoryItems[index];
+    const description = itemDescriptions[item] || "Item desconhecido";
+    
+    const viewer = document.getElementById("item-viewer");
+    const imageDiv = document.getElementById("item-viewer-image");
+    const descDiv = document.getElementById("item-viewer-description");
+    
+    imageDiv.innerHTML = `<img src="${item}.png" alt="${item}">`;
+    descDiv.innerText = description;
+    
+    viewer.style.display = "flex";
+  }
+
+  function fecharViewerItem() {
+    document.getElementById("item-viewer").style.display = "none";
+  }
+
+  function fecharInventario() {
+    document.getElementById("inventory-panel").style.display = "none";
+    selectedSlot = -1;
+  }
+
+  // ========== EVENT LISTENERS ==========
+
+    document.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() === 'e') {
+      if (level3Active) iniciarInteracaoVodidi();
+      if (level4Active) iniciarInteracaoVodeco();
+      if (level5Active) {
+        iniciarInteracaoTiaD();
+        iniciarInteracaoTioGuigo();
+      }
+    }
+    
+    if (e.key.toLowerCase() === 'i' && inventoryUnlocked) {
+      const panel = document.getElementById("inventory-panel");
+      if (panel.style.display === "none" || panel.style.display === "") {
+        abrirInventario();
+      } else {
+        fecharInventario();
+      }
+    }
+  });
+</script>
+</body>
+</html>
