@@ -232,8 +232,8 @@
 
   #heitor-container {
     position: absolute;
-    width: 120px;
-    height: 120px;
+    width: 200px;
+    height: 200px;
     bottom: 40%; 
     left: -200px; 
     transition: left 4s linear;
@@ -2302,8 +2302,23 @@
     if (level5Active) {
       const tiad = document.getElementById("tiad");
       const tioguigo = document.getElementById("tioguigo");
-      tiad.style.zIndex = posX > tiaDX ? 4 : 2;
-      tioguigo.style.zIndex = posX > tioGuigoDX ? 4 : 2;
+      const heitorContainer = document.getElementById("heitor-container");
+      
+      if (posX > tiaDX) {
+        tiad.style.zIndex = 2;
+        heitorContainer.style.zIndex = 5;
+      } else {
+        tiad.style.zIndex = 6;
+        heitorContainer.style.zIndex = 5;
+      }
+      
+      if (posX > tioGuigoDX) {
+        tioguigo.style.zIndex = 2;
+        heitorContainer.style.zIndex = 5;
+      } else {
+        tioguigo.style.zIndex = 6;
+        heitorContainer.style.zIndex = 5;
+      }
     }
     
     requestAnimationFrame(gameLoop);
@@ -2869,6 +2884,8 @@
     
     tiad.style.display = "block";
     tioguigo.style.display = "block";
+    
+    posY = ground - 80;
     
     tiaDX = window.innerWidth * 0.35;
     tiaDY = ground - 20;
