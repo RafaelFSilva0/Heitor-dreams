@@ -2299,9 +2299,31 @@
       tEl.style.transform = `scaleX(${tinaX < posX ? -1 : 1})`;
     }
 
+    if (level3Active) {
+      const hContainer = document.getElementById("heitor-container");
+      
+      // Dynamic z-index based on vertical position (posY) vs Vodidi
+      if (posY < vodidiY) {
+        hContainer.style.zIndex = 1; // Behind Vodidi
+      } else {
+        hContainer.style.zIndex = 5; // In front of Vodidi
+      }
+    }
+
     if (level5Active) {
+      const hContainer = document.getElementById("heitor-container");
       const tiad = document.getElementById("tiad");
       const tioguigo = document.getElementById("tioguigo");
+      
+      // Dynamic z-index based on vertical position (posY)
+      // Lower posY value = higher on screen = should be behind
+      // Higher posY value = lower on screen = should be in front
+      if (posY < Math.max(tiaDY, tioGuigoDY)) {
+        hContainer.style.zIndex = 1; // Behind NPCs
+      } else {
+        hContainer.style.zIndex = 5; // In front of NPCs
+      }
+      
       tiad.style.zIndex = posX > tiaDX ? 4 : 2;
       tioguigo.style.zIndex = posX > tioGuigoDX ? 4 : 2;
     }
@@ -2814,7 +2836,7 @@
       gameScreen.style.backgroundSize = "cover";
 
       ground = window.innerHeight * 0.40;
-      posY = ground - 50;
+      posY = ground;
       posX = -150;
       velocityX = 0;
       velocityY = 0;
