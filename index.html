@@ -2909,36 +2909,31 @@
     const tioGuigoProximo = !tioGuigoInteractionCompleted && distanciaTioGuigo < 200;
     
     if (tiaDProxima || tioGuigoProximo) {
-      // Se ambos estão próximos, mostrar o prompt do mais próximo
+      // Determinar qual NPC mostrar o prompt
+      let npcX, npcY;
+      
       if (tiaDProxima && tioGuigoProximo) {
+        // Se ambos estão próximos, mostrar o prompt do mais próximo
         if (distanciaTioGuigo < distanciaTiaD) {
-          prompt.style.left = (tioGuigoDX - 120) + "px";
-          prompt.style.bottom = (tioGuigoDY + 250) + "px";
+          npcX = tioGuigoDX;
+          npcY = tioGuigoDY;
         } else {
-          prompt.style.left = (tiaDX - 120) + "px";
-          prompt.style.bottom = (tiaDY + 250) + "px";
+          npcX = tiaDX;
+          npcY = tiaDY;
         }
       } else if (tioGuigoProximo) {
-        prompt.style.left = (tioGuigoDX - 120) + "px";
-        prompt.style.bottom = (tioGuigoDY + 250) + "px";
+        npcX = tioGuigoDX;
+        npcY = tioGuigoDY;
       } else {
-        prompt.style.left = (tiaDX - 120) + "px";
-        prompt.style.bottom = (tiaDY + 250) + "px";
+        npcX = tiaDX;
+        npcY = tiaDY;
       }
+      
+      prompt.style.left = (npcX - 120) + "px";
+      prompt.style.bottom = (npcY + 250) + "px";
       prompt.style.display = "block";
     } else {
       prompt.style.display = "none";
-    }
-  }
-
-  function verificarProximidadeTiaDInteracao() {
-    const distancia = Math.abs(posX - tiaDX);
-    const prompt = document.getElementById("interaction-prompt");
-    
-    if (distancia < 200) {
-      prompt.style.display = "block";
-      prompt.style.left = (tiaDX - 120) + "px";
-      prompt.style.bottom = (tiaDY + 250) + "px";
     }
   }
 
@@ -2963,21 +2958,6 @@
     tiaDInteractionActive = false;
     gameActive = true;
     gameLoop();
-  }
-
-  function verificarProximidadeTioGuigo() {
-    const distancia = Math.abs(posX - tioGuigoDX);
-    const prompt = document.getElementById("interaction-prompt");
-    
-    if (tioGuigoInteractionCompleted) {
-      return;
-    }
-    
-    if (distancia < 200) {
-      prompt.style.display = "block";
-      prompt.style.left = (tioGuigoDX - 120) + "px";
-      prompt.style.bottom = (tioGuigoDY + 250) + "px";
-    }
   }
 
   function iniciarInteracaoTioGuigo() {
