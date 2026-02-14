@@ -1363,6 +1363,7 @@
   document.addEventListener('click', iniciarMusicaMenu);
 
   // VARIÁVEIS DE JOGO
+  const HEITOR_HEIGHT = 120; // NÃO MUDE - Tamanho fixo do Heitor
   let stage = 0, gameActive = false, cutsceneActive = false, battleActive = false;
   let level2Active = false, level3Active = false, level4Active = false, level5Active = false;
   let ground = window.innerHeight * 0.40;
@@ -1405,6 +1406,9 @@
   let tioGuigoInteractionCompleted = false;
   let perfumeOferecido = false;
   let mostrarConfirmacaoAgain = false;
+
+  // VARIÁVEL PARA CONTROLAR QUAL NPC ESTÁ MAIS PRÓXIMO
+  let proximoNPC = null;
 
   // VARIÁVEIS INVENTÁRIO
   let inventoryItems = [null, null, null, null, null, null, null];
@@ -2226,12 +2230,12 @@
       verificarProximidadeTiaDInicial();
     }
 
-    if (level5Active && tiaDInteractionCompleted && !tiaDInteractionActive) {
+    // VERIFICAR AMBOS OS NPCs EM PARALELO QUANDO DISPONÍVEIS PARA INTERAÇÃO
+    if (level5Active && tiaDInteractionCompleted && !tiaDInteractionActive && !tioGuigoInteractionActive) {
       verificarProximidadeTiaDInteracao();
-    }
-
-    if (level5Active && tioGuigoInteractionCompleted === false) {
-      verificarProximidadeTioGuigo();
+      if (!tioGuigoInteractionCompleted) {
+        verificarProximidadeTioGuigo();
+      }
     }
     
     if (level3Active && exitArrowVisible) {
@@ -2299,6 +2303,21 @@
       tEl.style.transform = `scaleX(${tinaX < posX ? -1 : 1})`;
     }
 
+    // Z-INDEX DINÂMICO - LEVEL 3 (VODIDI)
+    if (level3Active) {
+      const vodidi = document.getElementById('vodidi');
+      const heitorContainer = document.getElementById('heitor-container');
+      const vodidiY = vodidi.offsetTop + vodidi.offsetHeight;
+      const heitorBottomY = posY + HEITOR_HEIGHT; // posY + height
+      
+      if (heitorBottomY > vodidiY) {
+        heitorContainer.style.zIndex = 1; // ATRÁS
+      } else {
+        heitorContainer.style.zIndex = 5; // NA FRENTE
+      }
+    }
+
+    // Z-INDEX DINÂMICO - LEVEL 5 (TIA D E TIO GUIGO)
     if (level5Active) {
       const tiad = document.getElementById("tiad");
       const tioguigo = document.getElementById("tioguigo");
@@ -2814,7 +2833,7 @@
       gameScreen.style.backgroundSize = "cover";
 
       ground = window.innerHeight * 0.40;
-      posY = ground - 50;
+      posY = window.innerHeight - 200; // Ajustado para Heitor ficar visualmente mais baixo
       posX = -150;
       velocityX = 0;
       velocityY = 0;
@@ -2909,21 +2928,33 @@
     const prompt = document.getElementById("interaction-prompt");
     
     if (distancia < 200) {
+      // Se já existe outro NPC mais próximo, não mostrar prompt
+      if (proximoNPC && proximoNPC !== 'tiaD') {
+        return;
+      }
+      
+      proximoNPC = 'tiaD';
       prompt.style.display = "block";
       prompt.style.left = (tiaDX - 120) + "px";
       prompt.style.bottom = (tiaDY + 250) + "px";
     } else {
-      prompt.style.display = "none";
+      // Se este era o NPC próximo, limpar
+      if (proximoNPC === 'tiaD') {
+        proximoNPC = null;
+        prompt.style.display = "none";
+      }
     }
   }
 
   function iniciarInteracaoTiaD() {
+    if (proximoNPC !== 'tiaD') return;
     if (!level5Active || !tiaDInteractionCompleted || tiaDInteractionActive) return;
     
     const distancia = Math.abs(posX - tiaDX);
     if (distancia < 200) {
       tiaDInteractionActive = true;
       gameActive = false;
+      proximoNPC = null;
       document.getElementById("interaction-prompt").style.display = "none";
       
       showDialog("TIA ANDREZA DIZ:", "Queria cigarros melhores para fumar...").then(() => {
@@ -2945,26 +2976,41 @@
     const prompt = document.getElementById("interaction-prompt");
     
     if (tioGuigoInteractionCompleted) {
-      prompt.style.display = "none";
+      if (proximoNPC === 'tioGuigo') {
+        proximoNPC = null;
+        prompt.style.display = "none";
+      }
       return;
     }
     
     if (distancia < 200) {
+      // Se já existe outro NPC mais próximo, não mostrar prompt
+      if (proximoNPC && proximoNPC !== 'tioGuigo') {
+        return;
+      }
+      
+      proximoNPC = 'tioGuigo';
       prompt.style.display = "block";
       prompt.style.left = (tioGuigoDX - 120) + "px";
       prompt.style.bottom = (tioGuigoDY + 250) + "px";
     } else {
-      prompt.style.display = "none";
+      // Se este era o NPC próximo, limpar
+      if (proximoNPC === 'tioGuigo') {
+        proximoNPC = null;
+        prompt.style.display = "none";
+      }
     }
   }
 
   function iniciarInteracaoTioGuigo() {
+    if (proximoNPC !== 'tioGuigo') return;
     if (!level5Active || tioGuigoInteractionActive || tioGuigoInteractionCompleted) return;
     
     const distancia = Math.abs(posX - tioGuigoDX);
     if (distancia < 200) {
       tioGuigoInteractionActive = true;
       gameActive = false;
+      proximoNPC = null;
       document.getElementById("interaction-prompt").style.display = "none";
       
       showDialog("TIO GUIGO DIZ:", "Funcionários! Eu estou tão irritado!").then(() => {
@@ -3208,8 +3254,8 @@
       if (level3Active) iniciarInteracaoVodidi();
       if (level4Active) iniciarInteracaoVodeco();
       if (level5Active) {
-        iniciarInteracaoTiaD();
-        iniciarInteracaoTioGuigo();
+        if (proximoNPC === 'tiaD') iniciarInteracaoTiaD();
+        else if (proximoNPC === 'tioGuigo') iniciarInteracaoTioGuigo();
       }
     }
     
