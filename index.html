@@ -2905,23 +2905,12 @@
     const distanciaTiaD = Math.abs(posX - tiaDX);
     const distanciaTioGuigo = Math.abs(posX - tioGuigoDX);
     
-    let mostrarPrompt = false;
+    const tiaDProxima = tiaDInteractionCompleted && distanciaTiaD < 200;
+    const tioGuigoProximo = !tioGuigoInteractionCompleted && distanciaTioGuigo < 200;
     
-    // Verificar Tia D (se o diálogo inicial já foi completado)
-    if (tiaDInteractionCompleted && distanciaTiaD < 200) {
-      mostrarPrompt = true;
-      prompt.style.left = (tiaDX - 120) + "px";
-      prompt.style.bottom = (tiaDY + 250) + "px";
-    }
-    
-    // Verificar Tio Guigo (se ainda não completou a interação)
-    if (!tioGuigoInteractionCompleted && distanciaTioGuigo < 200) {
-      mostrarPrompt = true;
-      prompt.style.left = (tioGuigoDX - 120) + "px";
-      prompt.style.bottom = (tioGuigoDY + 250) + "px";
-      
+    if (tiaDProxima || tioGuigoProximo) {
       // Se ambos estão próximos, mostrar o prompt do mais próximo
-      if (tiaDInteractionCompleted && distanciaTiaD < 200) {
+      if (tiaDProxima && tioGuigoProximo) {
         if (distanciaTioGuigo < distanciaTiaD) {
           prompt.style.left = (tioGuigoDX - 120) + "px";
           prompt.style.bottom = (tioGuigoDY + 250) + "px";
@@ -2929,10 +2918,13 @@
           prompt.style.left = (tiaDX - 120) + "px";
           prompt.style.bottom = (tiaDY + 250) + "px";
         }
+      } else if (tioGuigoProximo) {
+        prompt.style.left = (tioGuigoDX - 120) + "px";
+        prompt.style.bottom = (tioGuigoDY + 250) + "px";
+      } else {
+        prompt.style.left = (tiaDX - 120) + "px";
+        prompt.style.bottom = (tiaDY + 250) + "px";
       }
-    }
-    
-    if (mostrarPrompt) {
       prompt.style.display = "block";
     } else {
       prompt.style.display = "none";
