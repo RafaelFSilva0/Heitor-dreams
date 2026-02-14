@@ -2299,6 +2299,30 @@
       tEl.style.transform = `scaleX(${tinaX < posX ? -1 : 1})`;
     }
 
+    if (level3Active) {
+      const heitorContainer = document.getElementById('heitor-container');
+      const vodidi = document.getElementById('vodidi');
+      
+      if (heitorContainer && vodidi) {
+        // Pegar os valores de posição e altura com segurança
+        const heitorY = posY; // Y atual do Heitor
+        const heitorHeight = 120; // altura do Heitor
+        const heitorBottom = heitorY + heitorHeight;
+        
+        const vodidiY = vodidi.offsetTop || 0;
+        const vodidiHeight = vodidi.offsetHeight || 470;
+        const vodidiBottom = vodidiY + vodidiHeight;
+        
+        // Se Heitor está ABAIXO do Vodidi (visualmente mais perto da câmera)
+        // Heitor deve ficar ATRÁS (z-index menor)
+        if (heitorBottom > vodidiBottom) {
+          heitorContainer.style.zIndex = 1;
+        } else {
+          heitorContainer.style.zIndex = 5;
+        }
+      }
+    }
+
     if (level5Active) {
       const tiad = document.getElementById("tiad");
       const tioguigo = document.getElementById("tioguigo");
