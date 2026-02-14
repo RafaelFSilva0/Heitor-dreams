@@ -1363,6 +1363,7 @@
   document.addEventListener('click', iniciarMusicaMenu);
 
   // VARIÁVEIS DE JOGO
+  const HEITOR_HEIGHT = 120; // NÃO MUDE - Tamanho fixo do Heitor
   let stage = 0, gameActive = false, cutsceneActive = false, battleActive = false;
   let level2Active = false, level3Active = false, level4Active = false, level5Active = false;
   let ground = window.innerHeight * 0.40;
@@ -2232,7 +2233,9 @@
     // VERIFICAR AMBOS OS NPCs EM PARALELO QUANDO DISPONÍVEIS PARA INTERAÇÃO
     if (level5Active && tiaDInteractionCompleted && !tiaDInteractionActive && !tioGuigoInteractionActive) {
       verificarProximidadeTiaDInteracao();
-      verificarProximidadeTioGuigo();
+      if (!tioGuigoInteractionCompleted) {
+        verificarProximidadeTioGuigo();
+      }
     }
     
     if (level3Active && exitArrowVisible) {
@@ -2305,7 +2308,7 @@
       const vodidi = document.getElementById('vodidi');
       const heitorContainer = document.getElementById('heitor-container');
       const vodidiY = vodidi.offsetTop + vodidi.offsetHeight;
-      const heitorBottomY = posY + 120; // posY + height
+      const heitorBottomY = posY + HEITOR_HEIGHT; // posY + height
       
       if (heitorBottomY > vodidiY) {
         heitorContainer.style.zIndex = 1; // ATRÁS
