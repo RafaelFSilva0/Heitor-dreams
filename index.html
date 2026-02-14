@@ -2299,6 +2299,12 @@
       tEl.style.transform = `scaleX(${tinaX < posX ? -1 : 1})`;
     }
 
+    if (level3Active) {
+      const hContainer = document.getElementById("heitor-container");
+      // Dynamic z-index based on vertical position: Heitor passes behind Vodidi when lower on map
+      hContainer.style.zIndex = posY > vodidiY ? 1 : 5;
+    }
+
     if (level5Active) {
       const tiad = document.getElementById("tiad");
       const tioguigo = document.getElementById("tioguigo");
@@ -2871,7 +2877,7 @@
     tioguigo.style.display = "block";
     
     tiaDX = window.innerWidth * 0.35;
-    tiaDY = ground - 20;
+    tiaDY = ground - 100;
     
     tioGuigoDX = window.innerWidth * 0.65;
     tioGuigoDY = ground - 20;
