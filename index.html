@@ -2304,20 +2304,18 @@
       const tioguigo = document.getElementById("tioguigo");
       const heitorContainer = document.getElementById("heitor-container");
       
+      heitorContainer.style.zIndex = 5;
+      
       if (posX > tiaDX) {
         tiad.style.zIndex = 2;
-        heitorContainer.style.zIndex = 5;
       } else {
         tiad.style.zIndex = 6;
-        heitorContainer.style.zIndex = 5;
       }
       
       if (posX > tioGuigoDX) {
         tioguigo.style.zIndex = 2;
-        heitorContainer.style.zIndex = 5;
       } else {
         tioguigo.style.zIndex = 6;
-        heitorContainer.style.zIndex = 5;
       }
     }
     
