@@ -248,7 +248,7 @@
     object-fit: contain;
   }
 
-  #tina, #luiza, #laura, #tinatriste, #vodidi, #vodeco, #tiad, #tioguigo, #tialine, #violao {
+  #tina, #luiza, #laura, #tinatriste, #vodidi, #vodeco, #tiad, #tioguigo, #tialine, #violao, #tiobruno, #vomari {
     position: absolute;
     image-rendering: pixelated;
   }
@@ -312,6 +312,12 @@
     height: 150px;
     z-index: 2;
   }
+
+  #tiobruno, #vomari {
+    width: 300px;
+    height: 350px;
+    z-index: 2;
+  }
   
   #tina { display: none; }
   #luiza { display: none; }
@@ -323,6 +329,8 @@
   #tioguigo { display: none; }
   #tialine { display: none; }
   #violao { display: none; }
+  #tiobruno { display: none; }
+  #vomari { display: none; }
 
   .diaper { position: absolute; top: -80px; width: 60px; animation: fall linear forwards; pointer-events: none; opacity: 0.7; }
   @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
@@ -1229,6 +1237,8 @@
   <img src="tioguigo.png" id="tioguigo">
   <img src="tialine.png" id="tialine">
   <img src="violao.png" id="violao">
+  <img src="tiobruno.png" id="tiobruno">
+  <img src="vomari.png" id="vomari">
 
   <!-- CAIXA DE INTERAÇÃO COM NPCs -->
   <div id="interaction-prompt">
@@ -1357,6 +1367,10 @@
   const somviolao = new Audio('somviolao.mp3');
   somviolao.volume = 0.8;
 
+  const trilha5 = new Audio('trilha5.mp3');
+  trilha5.loop = true;
+  trilha5.volume = 0.5;
+
   // FLAG para controlar se a música de menu já tocou
   let musicaMenuTocando = false;
 
@@ -1372,6 +1386,8 @@
 
   // VARIÁVEIS DE JOGO
   const HEITOR_HEIGHT = 120; // NÃO MUDE - Tamanho fixo do Heitor
+  const NPC_PROXIMITY_THRESHOLD = 200; // Distância para mostrar prompt de interação
+  const INTERACTION_PROMPT_OFFSET = 280; // Offset vertical do prompt de interação
   let stage = 0, gameActive = false, cutsceneActive = false, battleActive = false;
   let level2Active = false, level3Active = false, level4Active = false, level5Active = false;
   let ground = window.innerHeight * 0.40;
@@ -1422,6 +1438,17 @@
   let tiaAlineInteractionCompleted = false;
   let tiaAlineSequenceTriggered = false;
   let tiaAlineInteractionAvailable = false;
+
+  // VARIÁVEIS LEVEL 6
+  let level6Active = false;
+  let tiobrunoX = 0;
+  let tiobrunoY = 0;
+  let tiobrunoInteractionActive = false;
+  let tiobrunoInteractionCompleted = false;
+  let vomariX = 0;
+  let vomariY = 0;
+  let vomariInteractionActive = false;
+  let vomariInteractionCompleted = false;
 
   // VARIÁVEL PARA CONTROLAR QUAL NPC ESTÁ MAIS PRÓXIMO
   let proximoNPC = null;
@@ -2275,8 +2302,20 @@
     if (level5Active) {
       verificarSaidaLevel5();
     }
+
+    if (level6Active && !tiobrunoInteractionActive && !tiobrunoInteractionCompleted) {
+      verificarProximidadeTioBruno();
+    }
+
+    if (level6Active && !vomariInteractionActive && !vomariInteractionCompleted) {
+      verificarProximidadeVomari();
+    }
+
+    if (level6Active) {
+      verificarSaidaLevel6();
+    }
     
-    if ((battleActive && !level2Active) || level2Active || level3Active || level4Active || level5Active) {
+    if ((battleActive && !level2Active) || level2Active || level3Active || level4Active || level5Active || level6Active) {
       if (keys["a"] || keys["A"]) { 
         velocityX -= accel; 
         direction = -1; 
@@ -2364,6 +2403,20 @@
       const tioguigo = document.getElementById("tioguigo");
       tiad.style.zIndex = posX > tiaDX ? 4 : 2;
       tioguigo.style.zIndex = posX > tioGuigoDX ? 4 : 2;
+    }
+
+    // Z-INDEX DINÂMICO - LEVEL 6 (TIO BRUNO E VOMARI)
+    if (level6Active) {
+      const heitorContainer = document.getElementById('heitor-container');
+      const tiobruno = document.getElementById("tiobruno");
+      const vomari = document.getElementById("vomari");
+      if (posY > ground - 10) {
+        heitorContainer.style.zIndex = 1;
+      } else {
+        heitorContainer.style.zIndex = 5;
+      }
+      tiobruno.style.zIndex = posX > tiobrunoX ? 4 : 2;
+      vomari.style.zIndex = posX > vomariX ? 4 : 2;
     }
     
     requestAnimationFrame(gameLoop);
@@ -3190,9 +3243,9 @@
       return;
     }
     
-    // Normal exit after Tia Aline sequence is complete
+    // Normal exit after Tia Aline sequence is complete - transition to Level 6
     if (posX >= window.innerWidth - 100 && tiaAlineInteractionCompleted) {
-      finalizarJogo();
+      iniciarTransicaoLevel6();
     }
   }
 
@@ -3431,6 +3484,192 @@
     }, 1000);
   }
 
+  // ========== NÍVEL 6 - PLATAFORMA MUSICAL ==========
+
+  function iniciarTransicaoLevel6() {
+    gameActive = false;
+    cutsceneActive = true;
+    level5Active = false;
+    
+    // Remove NPCs da Taberna
+    document.getElementById("tiad").style.display = "none";
+    document.getElementById("tioguigo").style.display = "none";
+    document.getElementById("tialine").style.display = "none";
+    document.getElementById("exit-arrow").style.display = "none";
+    document.getElementById("interaction-prompt").style.display = "none";
+    
+    // PARAR TODAS as trilhas de música anteriores
+    somMenu.pause();
+    somMenu.currentTime = 0;
+    somPrincipal.pause();
+    somPrincipal.currentTime = 0;
+    somTaberna.pause();
+    somTaberna.currentTime = 0;
+    somBatalha.pause();
+    somBatalha.currentTime = 0;
+    somjokenpo.pause();
+    somjokenpo.currentTime = 0;
+    
+    const gameScreen = document.getElementById("game-screen");
+    gameScreen.style.transition = "none";
+    gameScreen.style.background = "#000000";
+
+    setTimeout(() => {
+      gameScreen.style.transition = "background 1.5s ease-in-out";
+      gameScreen.style.background = "url('background_5.png') no-repeat center bottom";
+      gameScreen.style.backgroundSize = "cover";
+
+      setTimeout(() => {
+        posX = window.innerWidth * 0.15;
+        posY = ground;
+        
+        const heitorContainer = document.getElementById("heitor-container");
+        heitorContainer.style.display = "block";
+        heitorContainer.style.transition = "none";
+        updateVisuals();
+
+        // Tocar APENAS trilha5.mp3 em loop
+        setTimeout(() => {
+          trilha5.currentTime = 0;
+          trilha5.play().catch(e => console.log("Trilha 5 ainda não disponível"));
+        }, 100);
+
+        cutsceneActive = true;
+        
+        // Mostrar mensagem inicial
+        setTimeout(async () => {
+          await showDialog("NARRADOR:", "Heitor está escutando uma linda melodia, parece que está vindo do rapaz à esquerda.");
+          
+          cutsceneActive = false;
+          level6Active = true;
+          gameActive = true;
+          posicionarNPCsLevel6();
+          gameLoop();
+        }, 500);
+
+      }, 800);
+
+    }, 300);
+  }
+
+  function posicionarNPCsLevel6() {
+    const tiobruno = document.getElementById("tiobruno");
+    const vomari = document.getElementById("vomari");
+    
+    tiobruno.style.display = "block";
+    vomari.style.display = "block";
+    
+    // Tio Bruno à esquerda
+    tiobrunoX = window.innerWidth * 0.25;
+    tiobrunoY = ground - 20;
+    
+    // Vomari à direita
+    vomariX = window.innerWidth * 0.75;
+    vomariY = ground - 20;
+    
+    tiobruno.style.left = tiobrunoX + "px";
+    tiobruno.style.bottom = tiobrunoY + "px";
+    
+    vomari.style.left = vomariX + "px";
+    vomari.style.bottom = vomariY + "px";
+  }
+
+  function verificarProximidadeTioBruno() {
+    if (!level6Active || tiobrunoInteractionActive || tiobrunoInteractionCompleted) return;
+    
+    const distancia = Math.abs(posX - tiobrunoX);
+    
+    if (distancia < NPC_PROXIMITY_THRESHOLD && proximoNPC !== 'tioBruno') {
+      proximoNPC = 'tioBruno';
+      const prompt = document.getElementById("interaction-prompt");
+      prompt.style.display = "block";
+      prompt.style.left = (tiobrunoX - 120) + "px";
+      prompt.style.bottom = (ground + INTERACTION_PROMPT_OFFSET) + "px";
+    } else if (distancia >= NPC_PROXIMITY_THRESHOLD && proximoNPC === 'tioBruno') {
+      proximoNPC = null;
+      document.getElementById("interaction-prompt").style.display = "none";
+    }
+  }
+
+  function verificarProximidadeVomari() {
+    if (!level6Active || vomariInteractionActive || vomariInteractionCompleted) return;
+    
+    const distancia = Math.abs(posX - vomariX);
+    
+    if (distancia < NPC_PROXIMITY_THRESHOLD && proximoNPC !== 'vomari') {
+      proximoNPC = 'vomari';
+      const prompt = document.getElementById("interaction-prompt");
+      prompt.style.display = "block";
+      prompt.style.left = (vomariX - 120) + "px";
+      prompt.style.bottom = (ground + INTERACTION_PROMPT_OFFSET) + "px";
+    } else if (distancia >= NPC_PROXIMITY_THRESHOLD && proximoNPC === 'vomari') {
+      proximoNPC = null;
+      document.getElementById("interaction-prompt").style.display = "none";
+    }
+  }
+
+  function verificarSaidaLevel6() {
+    // Preparar saída para próximos níveis (a ser implementado)
+    if (posX >= window.innerWidth - 100) {
+      // Placeholder para transição futura
+      finalizarJogo();
+    }
+  }
+
+  async function iniciarInteracaoTioBruno() {
+    if (proximoNPC !== 'tioBruno') return;
+    if (!level6Active || tiobrunoInteractionActive || tiobrunoInteractionCompleted) return;
+    
+    const distancia = Math.abs(posX - tiobrunoX);
+    if (distancia < NPC_PROXIMITY_THRESHOLD) {
+      tiobrunoInteractionActive = true;
+      gameActive = false;
+      proximoNPC = null;
+      document.getElementById("interaction-prompt").style.display = "none";
+      
+      // Placeholder dialogue - pode ser customizado depois
+      await showDialog("TIO BRUNO:", "Olá, Heitor! Seja bem-vindo!");
+      await showDialog("TIO BRUNO:", "Estou aqui tocando minha música favorita.");
+      
+      finalizarInteracaoTioBruno();
+    }
+  }
+
+  function finalizarInteracaoTioBruno() {
+    tiobrunoInteractionActive = false;
+    tiobrunoInteractionCompleted = true;
+    document.getElementById("interaction-prompt").style.display = "none";
+    gameActive = true;
+    gameLoop();
+  }
+
+  async function iniciarInteracaoVomari() {
+    if (proximoNPC !== 'vomari') return;
+    if (!level6Active || vomariInteractionActive || vomariInteractionCompleted) return;
+    
+    const distancia = Math.abs(posX - vomariX);
+    if (distancia < NPC_PROXIMITY_THRESHOLD) {
+      vomariInteractionActive = true;
+      gameActive = false;
+      proximoNPC = null;
+      document.getElementById("interaction-prompt").style.display = "none";
+      
+      // Placeholder dialogue - pode ser customizado depois
+      await showDialog("VOMARI:", "E aí, Heitor!");
+      await showDialog("VOMARI:", "Bem-vindo à nossa plataforma musical!");
+      
+      finalizarInteracaoVomari();
+    }
+  }
+
+  function finalizarInteracaoVomari() {
+    vomariInteractionActive = false;
+    vomariInteractionCompleted = true;
+    document.getElementById("interaction-prompt").style.display = "none";
+    gameActive = true;
+    gameLoop();
+  }
+
   function voltarAoMenu() {
     stage = 0;
     gameActive = false;
@@ -3439,6 +3678,7 @@
     level3Active = false;
     level4Active = false;
     level5Active = false;
+    level6Active = false;
     
     posX = window.innerWidth * 0.4;
     posY = -300;
@@ -3454,12 +3694,14 @@
     somTaberna.pause();
     somBatalha.pause();
     somjokenpo.pause();
+    trilha5.pause();
     
     somMenu.currentTime = 0;
     somPrincipal.currentTime = 0;
     somTaberna.currentTime = 0;
     somBatalha.currentTime = 0;
     somjokenpo.currentTime = 0;
+    trilha5.currentTime = 0;
     
     somMenu.play().catch(e => console.log("Música do menu não disponível"));
   }
@@ -3529,6 +3771,10 @@
         if (proximoNPC === 'tiaD') iniciarInteracaoTiaD();
         else if (proximoNPC === 'tioGuigo') iniciarInteracaoTioGuigo();
         else if (proximoNPC === 'tiaAline') iniciarInteracaoTiaAline();
+      }
+      if (level6Active) {
+        if (proximoNPC === 'tioBruno') iniciarInteracaoTioBruno();
+        else if (proximoNPC === 'vomari') iniciarInteracaoVomari();
       }
     }
     
