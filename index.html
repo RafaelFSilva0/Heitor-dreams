@@ -3282,7 +3282,9 @@
           if (!pastelAdded && inventoryItems[i] === null) {
             inventoryItems[i] = 'pastel';
             pastelAdded = true;
-          } else if (!drinkAdded && inventoryItems[i] === null) {
+            continue; // Skip to next iteration to avoid using same slot
+          }
+          if (!drinkAdded && inventoryItems[i] === null) {
             inventoryItems[i] = 'drink';
             drinkAdded = true;
           }
@@ -3290,9 +3292,17 @@
           if (pastelAdded && drinkAdded) break;
         }
         
-        // Show notification
+        // Show notification based on what was added
         const notification = document.getElementById("inventory-notification");
-        notification.innerHTML = "✨ PASTEL E BEBIDA ADICIONADOS AO INVENTÁRIO!";
+        if (pastelAdded && drinkAdded) {
+          notification.innerHTML = "✨ PASTEL E BEBIDA ADICIONADOS AO INVENTÁRIO!";
+        } else if (pastelAdded) {
+          notification.innerHTML = "✨ PASTEL ADICIONADO AO INVENTÁRIO!";
+        } else if (drinkAdded) {
+          notification.innerHTML = "✨ BEBIDA ADICIONADA AO INVENTÁRIO!";
+        } else {
+          notification.innerHTML = "⚠️ INVENTÁRIO CHEIO!";
+        }
         notification.style.display = "block";
         
         setTimeout(() => {
