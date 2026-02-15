@@ -3324,18 +3324,30 @@
     buttonsDiv.appendChild(btnRecusar);
   }
   
-  async function escolherDrink(opcao) {
+ async function escolherDrink(opcao) {
     const choiceMenu = document.getElementById("choice-menu");
     choiceMenu.style.display = "none";
     
-   if (opcao === 'recusar') {
-  // Player refuses, but gets a drink anyway
-  await showDialog("TIA ALINE:", "Tadinho, ele não sabe o que diz. Pressione E");
-  await showDialog("TIA ALINE:", "Fiz um especial para você GA RO TO!");
-  
-  // Add pastel and a special mystery drink to inventory
-  adicionarItensAoInventario('pastel', 'drink');
-}
+    if (opcao === 'moscowmule') {
+      // Player chooses Moscow Mule
+      await showDialog("TIA ALINE:", "Ótima escolha! Aproveite!");
+      
+      // Add pastel and moscow mule to inventory
+      adicionarItensAoInventario('pastel', 'moscowmule');
+    } else if (opcao === 'pinacolada') {
+      // Player chooses Piña Colada
+      await showDialog("TIA ALINE:", "Excelente escolha! Aproveite!");
+      
+      // Add pastel and pina colada to inventory
+      adicionarItensAoInventario('pastel', 'pinacolada');
+    } else if (opcao === 'recusar') {
+      // Player refuses, but gets a drink anyway
+      await showDialog("TIA ALINE:", "Tadinho, ele não sabe o que diz. Pressione E");
+      await showDialog("TIA ALINE:", "Fiz um especial para você GAROTO!");
+      
+      // Add pastel and a special mystery drink to inventory
+      adicionarItensAoInventario('pastel', 'drink');
+    }
     
     finalizarInteracaoTiaAline();
   }
@@ -3360,19 +3372,22 @@
     
     // Show notification based on what was added
     const notification = document.getElementById("inventory-notification");
-    let drinkName = 'BEBIDA';
+    let item2Name = 'BEBIDA';
+    
     if (item2 === 'moscowmule') {
-      drinkName = 'MOSCOW MULE';
+      item2Name = 'MOSCOW MULE';
     } else if (item2 === 'pinacolada') {
-      drinkName = 'PIÑA COLADA';
+      item2Name = 'PIÑA COLADA';
+    } else if (item2 === 'drink') {
+      item2Name = 'BEBIDA ESPECIAL';
     }
     
     if (item1Added && item2Added) {
-      notification.innerHTML = `✨ PASTEL E ${drinkName} ADICIONADOS AO INVENTÁRIO!`;
+      notification.innerHTML = `✨ PASTEL E ${item2Name} ADICIONADOS AO INVENTÁRIO!`;
     } else if (item1Added) {
       notification.innerHTML = "✨ PASTEL ADICIONADO AO INVENTÁRIO!";
     } else if (item2Added) {
-      notification.innerHTML = `✨ ${drinkName} ADICIONADO AO INVENTÁRIO!`;
+      notification.innerHTML = `✨ ${item2Name} ADICIONADO AO INVENTÁRIO!`;
     } else {
       notification.innerHTML = "⚠️ INVENTÁRIO CHEIO!";
     }
