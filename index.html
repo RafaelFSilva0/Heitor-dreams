@@ -1440,7 +1440,9 @@
     'violao': 'Violão que ganhei do vovó músico! Parece usado.',
     'perfume': 'Um perfume especial que recebi do Tio Guigo na taberna. Cheira muito bem!',
     'pastel': 'Um delicioso pastel de cortesia da taberna!',
-    'drink': 'Uma bebida refrescante da taberna!'
+    'drink': 'Uma bebida refrescante da taberna!',
+    'moscowmule': 'Um Moscow Mule delicioso preparado pela Tia Aline!',
+    'pinacolada': 'Uma Piña Colada refrescante feita pela Tia Aline!'
   };
 
   // ========== FUNÇÕES DO MENU ==========
@@ -2996,11 +2998,19 @@
       proximoNPC = null;
       document.getElementById("interaction-prompt").style.display = "none";
       
-      showDialog("TIA ANDREZA DIZ:", "Queria cigarros melhores para fumar...").then(() => {
-        showDialog("TIA ANDREZA DIZ:", "Ei! Você é muito novo para fumar, eu não deveria falar disso com você.").then(() => {
+      // If Tia Aline interaction is available (after she calls Heitor), show new dialogue
+      if (tiaAlineInteractionAvailable) {
+        showDialog("TIA ANDREZA DIZ:", "Desculpe garoto! Não estamos conseguindo funcionarios e estou com a cabeça longe.").then(() => {
           finalizarInteracaoTiaD();
         });
-      });
+      } else {
+        // Original dialogue before Tia Aline sequence
+        showDialog("TIA ANDREZA DIZ:", "Queria cigarros melhores para fumar...").then(() => {
+          showDialog("TIA ANDREZA DIZ:", "Ei! Você é muito novo para fumar, eu não deveria falar disso com você.").then(() => {
+            finalizarInteracaoTiaD();
+          });
+        });
+      }
     }
   }
 
@@ -3261,7 +3271,7 @@
     }
   }
 
-  function iniciarInteracaoTiaAline() {
+  async function iniciarInteracaoTiaAline() {
     if (proximoNPC !== 'tiaAline') return;
     if (!level5Active || !tiaAlineInteractionAvailable || tiaAlineInteractionActive || tiaAlineInteractionCompleted) return;
     
@@ -3272,46 +3282,113 @@
       proximoNPC = null;
       document.getElementById("interaction-prompt").style.display = "none";
       
-      // Tia Aline gives items to the player
-      showDialog("TIA ALINE:", "Aqui está seu pastel e uma bebida, garoto!").then(() => {
-        // Add items to inventory (find empty slots)
-        let pastelAdded = false;
-        let drinkAdded = false;
-        
-        for (let i = 0; i < inventoryItems.length; i++) {
-          if (!pastelAdded && inventoryItems[i] === null) {
-            inventoryItems[i] = 'pastel';
-            pastelAdded = true;
-            continue; // Skip to next iteration to avoid using same slot
-          }
-          if (!drinkAdded && inventoryItems[i] === null) {
-            inventoryItems[i] = 'drink';
-            drinkAdded = true;
-          }
-          
-          if (pastelAdded && drinkAdded) break;
-        }
-        
-        // Show notification based on what was added
-        const notification = document.getElementById("inventory-notification");
-        if (pastelAdded && drinkAdded) {
-          notification.innerHTML = "✨ PASTEL E BEBIDA ADICIONADOS AO INVENTÁRIO!";
-        } else if (pastelAdded) {
-          notification.innerHTML = "✨ PASTEL ADICIONADO AO INVENTÁRIO!";
-        } else if (drinkAdded) {
-          notification.innerHTML = "✨ BEBIDA ADICIONADA AO INVENTÁRIO!";
-        } else {
-          notification.innerHTML = "⚠️ INVENTÁRIO CHEIO!";
-        }
-        notification.style.display = "block";
-        
-        setTimeout(() => {
-          notification.style.display = "none";
-        }, 5000);
-        
-        finalizarInteracaoTiaAline();
-      });
+      // New dialogue sequence
+      await showDialog("TIA ALINE:", "Peço perdão pela gerencia... Pressione E");
+      await showDialog("TIA ALINE:", "Sou a Aline, a Taberneira... E faço ótimos Drinkes. Pressione E");
+      await showDialog("TIA ALINE:", "Tome esse pastel e vou fazer um Drink para você! Pressione E");
+      
+      // Show drink selection menu
+      mostrarMenuDrinks();
     }
+  }
+  
+  function mostrarMenuDrinks() {
+    const choiceMenu = document.getElementById("choice-menu");
+    const h3 = choiceMenu.querySelector("h3");
+    const p = choiceMenu.querySelector("p");
+    
+    h3.innerText = "🍹 TIA ALINE PERGUNTA 🍹";
+    p.innerText = "Você quer Drink do que?";
+    choiceMenu.style.display = "block";
+    
+    const buttonsDiv = choiceMenu.querySelector(".choice-buttons");
+    buttonsDiv.innerHTML = "";
+    
+    const btnMoscow = document.createElement("button");
+    btnMoscow.className = "choice-btn";
+    btnMoscow.innerText = "Moscow Mule";
+    btnMoscow.onclick = () => escolherDrink('moscowmule');
+    
+    const btnPina = document.createElement("button");
+    btnPina.className = "choice-btn";
+    btnPina.innerText = "Piña Colada";
+    btnPina.onclick = () => escolherDrink('pinacolada');
+    
+    const btnRecusar = document.createElement("button");
+    btnRecusar.className = "choice-btn";
+    btnRecusar.innerText = "Recusar";
+    btnRecusar.onclick = () => escolherDrink('recusar');
+    
+    buttonsDiv.appendChild(btnMoscow);
+    buttonsDiv.appendChild(btnPina);
+    buttonsDiv.appendChild(btnRecusar);
+  }
+  
+  async function escolherDrink(opcao) {
+    const choiceMenu = document.getElementById("choice-menu");
+    choiceMenu.style.display = "none";
+    
+    if (opcao === 'recusar') {
+      // Player refuses, but gets a drink anyway
+      await showDialog("TIA ALINE:", "Tadinho, ele não sabe o que diz kk Pressione E");
+      await showDialog("TIA ALINE:", "VAI TER DRINK SIM, NINGUEM RECUSA");
+      
+      // Add pastel and a random drink to inventory
+      const randomDrink = Math.random() < 0.5 ? 'moscowmule' : 'pinacolada';
+      adicionarItensAoInventario('pastel', randomDrink);
+    } else {
+      // Player accepts a drink
+      const drinkName = opcao === 'moscowmule' ? 'Moscow Mule' : 'Piña Colada';
+      await showDialog("TIA ALINE:", `Você sabe bem, saindo ${drinkName}`);
+      
+      // Add pastel and chosen drink to inventory
+      adicionarItensAoInventario('pastel', opcao);
+    }
+    
+    finalizarInteracaoTiaAline();
+  }
+  
+  function adicionarItensAoInventario(item1, item2) {
+    let item1Added = false;
+    let item2Added = false;
+    
+    for (let i = 0; i < inventoryItems.length; i++) {
+      if (!item1Added && inventoryItems[i] === null) {
+        inventoryItems[i] = item1;
+        item1Added = true;
+        continue;
+      }
+      if (!item2Added && inventoryItems[i] === null) {
+        inventoryItems[i] = item2;
+        item2Added = true;
+      }
+      
+      if (item1Added && item2Added) break;
+    }
+    
+    // Show notification based on what was added
+    const notification = document.getElementById("inventory-notification");
+    let drinkName = 'BEBIDA';
+    if (item2 === 'moscowmule') {
+      drinkName = 'MOSCOW MULE';
+    } else if (item2 === 'pinacolada') {
+      drinkName = 'PIÑA COLADA';
+    }
+    
+    if (item1Added && item2Added) {
+      notification.innerHTML = `✨ PASTEL E ${drinkName} ADICIONADOS AO INVENTÁRIO!`;
+    } else if (item1Added) {
+      notification.innerHTML = "✨ PASTEL ADICIONADO AO INVENTÁRIO!";
+    } else if (item2Added) {
+      notification.innerHTML = `✨ ${drinkName} ADICIONADO AO INVENTÁRIO!`;
+    } else {
+      notification.innerHTML = "⚠️ INVENTÁRIO CHEIO!";
+    }
+    notification.style.display = "block";
+    
+    setTimeout(() => {
+      notification.style.display = "none";
+    }, 5000);
   }
 
   function finalizarInteracaoTiaAline() {
