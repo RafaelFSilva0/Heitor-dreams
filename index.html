@@ -248,7 +248,7 @@
     object-fit: contain;
   }
 
-  #tina, #luiza, #laura, #tinatriste, #vodidi, #vodeco, #tiad, #tioguigo, #violao {
+  #tina, #luiza, #laura, #tinatriste, #vodidi, #vodeco, #tiad, #tioguigo, #tialine, #violao {
     position: absolute;
     image-rendering: pixelated;
   }
@@ -295,6 +295,12 @@
     z-index: 2;
   }
 
+  #tialine {
+    width: 180px;
+    height: 290px;
+    z-index: 2;
+  }
+
   #violao {
     width: 200px;
     height: 200px;
@@ -315,6 +321,7 @@
   #vodeco { display: none; }
   #tiad { display: none; }
   #tioguigo { display: none; }
+  #tialine { display: none; }
   #violao { display: none; }
 
   .diaper { position: absolute; top: -80px; width: 60px; animation: fall linear forwards; pointer-events: none; opacity: 0.7; }
@@ -1220,6 +1227,7 @@
   <img src="vodeco.png" id="vodeco">
   <img src="tiad.png" id="tiad">
   <img src="tioguigo.png" id="tioguigo">
+  <img src="tialine.png" id="tialine">
   <img src="violao.png" id="violao">
 
   <!-- CAIXA DE INTERAÇÃO COM NPCs -->
@@ -1407,6 +1415,14 @@
   let perfumeOferecido = false;
   let mostrarConfirmacaoAgain = false;
 
+  // VARIÁVEIS TIA ALINE
+  let tiaAlineX = 0;
+  let tiaAlineY = 0;
+  let tiaAlineInteractionActive = false;
+  let tiaAlineInteractionCompleted = false;
+  let tiaAlineSequenceTriggered = false;
+  let tiaAlineInteractionAvailable = false;
+
   // VARIÁVEL PARA CONTROLAR QUAL NPC ESTÁ MAIS PRÓXIMO
   let proximoNPC = null;
 
@@ -1422,7 +1438,9 @@
   const itemDescriptions = {
     'carta': 'Item que a vovó do churros me deu. Parece usada.',
     'violao': 'Violão que ganhei do vovó músico! Parece usado.',
-    'perfume': 'Um perfume especial que recebi do Tio Guigo na taberna. Cheira muito bem!'
+    'perfume': 'Um perfume especial que recebi do Tio Guigo na taberna. Cheira muito bem!',
+    'pastel': 'Um delicioso pastel de cortesia da taberna!',
+    'drink': 'Uma bebida refrescante da taberna!'
   };
 
   // ========== FUNÇÕES DO MENU ==========
@@ -2239,6 +2257,11 @@
       }
     }
     
+    // VERIFICAR PROXIMIDADE DE TIA ALINE APÓS A SEQUÊNCIA
+    if (level5Active && tiaAlineInteractionAvailable && !tiaAlineInteractionActive) {
+      verificarProximidadeTiaAline();
+    }
+    
     if (level3Active && exitArrowVisible) {
       verificarSaidaLevel3();
     }
@@ -2247,7 +2270,7 @@
       verificarSaidaLevel4();
     }
 
-    if (level5Active && exitArrowVisible) {
+    if (level5Active) {
       verificarSaidaLevel5();
     }
     
@@ -3147,9 +3170,148 @@
   }
 
   function verificarSaidaLevel5() {
-    if (posX >= window.innerWidth - 100) {
+    // Trigger Tia Aline sequence when player approaches exit arrow (before exiting)
+    if (posX >= window.innerWidth - 200 && !tiaAlineSequenceTriggered && exitArrowVisible) {
+      tiaAlineSequenceTriggered = true;
+      gameActive = false;
+      exitArrowVisible = false;
+      document.getElementById("exit-arrow").style.display = "none";
+      iniciarSequenciaTiaAline();
+      return;
+    }
+    
+    // Normal exit after Tia Aline sequence is complete
+    if (posX >= window.innerWidth - 100 && tiaAlineInteractionCompleted) {
       finalizarJogo();
     }
+  }
+
+  async function iniciarSequenciaTiaAline() {
+    // Show initial dialogue
+    await showDialog("TIA ALINE:", "Espereeee garoto!");
+    
+    // Position Tia Aline on the left side and animate her entrance
+    posicionarTiaAline();
+    
+    // Continue dialogue sequence
+    await showDialog("TIA ALINE:", "Andreza! Como você não oferece um pastel de cortesia para o garoto!");
+    await showDialog("TIA ANDREZA:", "Aline, eu esqueci, estou com tantas coisas na cabeça.");
+    await showDialog("TIA ALINE:", "Garoto, vem aqui!");
+    
+    // After dialogues, enable free control and interaction with Tia Aline
+    tiaAlineInteractionAvailable = true;
+    gameActive = true;
+    gameLoop();
+  }
+
+  function posicionarTiaAline() {
+    const tialine = document.getElementById("tialine");
+    tialine.style.display = "block";
+    
+    // Start from the left side
+    tiaAlineX = -200;
+    tiaAlineY = ground - 50;
+    
+    tialine.style.left = tiaAlineX + "px";
+    tialine.style.bottom = tiaAlineY + "px";
+    tialine.style.transform = "scaleX(1)";
+    
+    // Animate entrance to center-left position
+    const targetX = window.innerWidth * 0.25;
+    
+    const animateEntrance = () => {
+      if (tiaAlineX < targetX) {
+        tiaAlineX += 5;
+        tialine.style.left = tiaAlineX + "px";
+        requestAnimationFrame(animateEntrance);
+      }
+    };
+    
+    animateEntrance();
+  }
+
+  function verificarProximidadeTiaAline() {
+    const distancia = Math.abs(posX - tiaAlineX);
+    const prompt = document.getElementById("interaction-prompt");
+    
+    if (!tiaAlineInteractionAvailable || tiaAlineInteractionCompleted) {
+      if (proximoNPC === 'tiaAline') {
+        proximoNPC = null;
+        prompt.style.display = "none";
+      }
+      return;
+    }
+    
+    if (distancia < 200) {
+      // Se já existe outro NPC mais próximo, não mostrar prompt
+      if (proximoNPC && proximoNPC !== 'tiaAline') {
+        return;
+      }
+      
+      proximoNPC = 'tiaAline';
+      prompt.style.display = "block";
+      prompt.style.left = (tiaAlineX - 120) + "px";
+      prompt.style.bottom = (tiaAlineY + 250) + "px";
+    } else {
+      // Se este era o NPC próximo, limpar
+      if (proximoNPC === 'tiaAline') {
+        proximoNPC = null;
+        prompt.style.display = "none";
+      }
+    }
+  }
+
+  function iniciarInteracaoTiaAline() {
+    if (proximoNPC !== 'tiaAline') return;
+    if (!level5Active || !tiaAlineInteractionAvailable || tiaAlineInteractionActive || tiaAlineInteractionCompleted) return;
+    
+    const distancia = Math.abs(posX - tiaAlineX);
+    if (distancia < 200) {
+      tiaAlineInteractionActive = true;
+      gameActive = false;
+      proximoNPC = null;
+      document.getElementById("interaction-prompt").style.display = "none";
+      
+      // Tia Aline gives items to the player
+      showDialog("TIA ALINE:", "Aqui está seu pastel e uma bebida, garoto!").then(() => {
+        // Add items to inventory (find empty slots)
+        let pastelAdded = false;
+        let drinkAdded = false;
+        
+        for (let i = 0; i < inventoryItems.length; i++) {
+          if (!pastelAdded && inventoryItems[i] === null) {
+            inventoryItems[i] = 'pastel';
+            pastelAdded = true;
+          } else if (!drinkAdded && inventoryItems[i] === null) {
+            inventoryItems[i] = 'drink';
+            drinkAdded = true;
+          }
+          
+          if (pastelAdded && drinkAdded) break;
+        }
+        
+        // Show notification
+        const notification = document.getElementById("inventory-notification");
+        notification.innerHTML = "✨ PASTEL E BEBIDA ADICIONADOS AO INVENTÁRIO!";
+        notification.style.display = "block";
+        
+        setTimeout(() => {
+          notification.style.display = "none";
+        }, 5000);
+        
+        finalizarInteracaoTiaAline();
+      });
+    }
+  }
+
+  function finalizarInteracaoTiaAline() {
+    tiaAlineInteractionActive = false;
+    tiaAlineInteractionCompleted = true;
+    document.getElementById("interaction-prompt").style.display = "none";
+    exitArrowVisible = true;
+    document.getElementById("exit-arrow").style.display = "block";
+    gameActive = true;
+    gameLoop();
   }
 
   function finalizarJogo() {
@@ -3272,6 +3434,7 @@
       if (level5Active) {
         if (proximoNPC === 'tiaD') iniciarInteracaoTiaD();
         else if (proximoNPC === 'tioGuigo') iniciarInteracaoTioGuigo();
+        else if (proximoNPC === 'tiaAline') iniciarInteracaoTiaAline();
       }
     }
     
