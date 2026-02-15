@@ -3368,7 +3368,12 @@
     
     // Show notification based on what was added
     const notification = document.getElementById("inventory-notification");
-    const drinkName = item2 === 'moscowmule' ? 'MOSCOW MULE' : 'PIÑA COLADA';
+    let drinkName = 'BEBIDA';
+    if (item2 === 'moscowmule') {
+      drinkName = 'MOSCOW MULE';
+    } else if (item2 === 'pinacolada') {
+      drinkName = 'PIÑA COLADA';
+    }
     
     if (item1Added && item2Added) {
       notification.innerHTML = `✨ PASTEL E ${drinkName} ADICIONADOS AO INVENTÁRIO!`;
