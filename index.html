@@ -316,7 +316,6 @@
   #tiobruno, #vomari {
     width: 300px;
     height: 350px;
-    display: none;
     z-index: 2;
   }
   
@@ -1387,6 +1386,8 @@
 
   // VARIÁVEIS DE JOGO
   const HEITOR_HEIGHT = 120; // NÃO MUDE - Tamanho fixo do Heitor
+  const NPC_PROXIMITY_THRESHOLD = 200; // Distância para mostrar prompt de interação
+  const INTERACTION_PROMPT_OFFSET = 280; // Offset vertical do prompt de interação
   let stage = 0, gameActive = false, cutsceneActive = false, battleActive = false;
   let level2Active = false, level3Active = false, level4Active = false, level5Active = false;
   let ground = window.innerHeight * 0.40;
@@ -3537,7 +3538,7 @@
         
         // Mostrar mensagem inicial
         setTimeout(async () => {
-          await showDialog("HEITOR:", "Heitor está escutando uma linda melodia, parece que está vindo do rapaz a esquerda.");
+          await showDialog("HEITOR:", "Heitor está escutando uma linda melodia, parece que está vindo do rapaz à esquerda.");
           
           cutsceneActive = false;
           level6Active = true;
@@ -3578,13 +3579,13 @@
     
     const distancia = Math.abs(posX - tiobrunoX);
     
-    if (distancia < 200 && proximoNPC !== 'tioBruno') {
+    if (distancia < NPC_PROXIMITY_THRESHOLD && proximoNPC !== 'tioBruno') {
       proximoNPC = 'tioBruno';
       const prompt = document.getElementById("interaction-prompt");
       prompt.style.display = "block";
       prompt.style.left = (tiobrunoX - 120) + "px";
-      prompt.style.bottom = (ground + 280) + "px";
-    } else if (distancia >= 200 && proximoNPC === 'tioBruno') {
+      prompt.style.bottom = (ground + INTERACTION_PROMPT_OFFSET) + "px";
+    } else if (distancia >= NPC_PROXIMITY_THRESHOLD && proximoNPC === 'tioBruno') {
       proximoNPC = null;
       document.getElementById("interaction-prompt").style.display = "none";
     }
@@ -3595,13 +3596,13 @@
     
     const distancia = Math.abs(posX - vomariX);
     
-    if (distancia < 200 && proximoNPC !== 'vomari') {
+    if (distancia < NPC_PROXIMITY_THRESHOLD && proximoNPC !== 'vomari') {
       proximoNPC = 'vomari';
       const prompt = document.getElementById("interaction-prompt");
       prompt.style.display = "block";
       prompt.style.left = (vomariX - 120) + "px";
-      prompt.style.bottom = (ground + 280) + "px";
-    } else if (distancia >= 200 && proximoNPC === 'vomari') {
+      prompt.style.bottom = (ground + INTERACTION_PROMPT_OFFSET) + "px";
+    } else if (distancia >= NPC_PROXIMITY_THRESHOLD && proximoNPC === 'vomari') {
       proximoNPC = null;
       document.getElementById("interaction-prompt").style.display = "none";
     }
@@ -3620,7 +3621,7 @@
     if (!level6Active || tiobrunoInteractionActive || tiobrunoInteractionCompleted) return;
     
     const distancia = Math.abs(posX - tiobrunoX);
-    if (distancia < 200) {
+    if (distancia < NPC_PROXIMITY_THRESHOLD) {
       tiobrunoInteractionActive = true;
       gameActive = false;
       proximoNPC = null;
@@ -3647,7 +3648,7 @@
     if (!level6Active || vomariInteractionActive || vomariInteractionCompleted) return;
     
     const distancia = Math.abs(posX - vomariX);
-    if (distancia < 200) {
+    if (distancia < NPC_PROXIMITY_THRESHOLD) {
       vomariInteractionActive = true;
       gameActive = false;
       proximoNPC = null;
