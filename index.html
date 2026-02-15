@@ -3328,22 +3328,14 @@
     const choiceMenu = document.getElementById("choice-menu");
     choiceMenu.style.display = "none";
     
-    if (opcao === 'recusar') {
-      // Player refuses, but gets a drink anyway
-      await showDialog("TIA ALINE:", "Tadinho, ele não sabe o que diz. Pressione E");
-      await showDialog("TIA ALINE:", "Fiz um especial para você GA RO TO!");
-      
-      // Add pastel and a random drink to inventory
-      const randomDrink = Math.random() < 0.5 ? 'moscowmule' : 'pinacolada';
-      adicionarItensAoInventario('pastel', randomDrink);
-    } else {
-      // Player accepts a drink
-      const drinkName = opcao === 'moscowmule' ? 'Moscow Mule' : 'Piña Colada';
-      await showDialog("TIA ALINE:", `Você sabe bem, saindo ${drinkName}`);
-      
-      // Add pastel and chosen drink to inventory
-      adicionarItensAoInventario('pastel', opcao);
-    }
+   if (opcao === 'recusar') {
+  // Player refuses, but gets a drink anyway
+  await showDialog("TIA ALINE:", "Tadinho, ele não sabe o que diz. Pressione E");
+  await showDialog("TIA ALINE:", "Fiz um especial para você GA RO TO!");
+  
+  // Add pastel and a special mystery drink to inventory
+  adicionarItensAoInventario('pastel', 'drink');
+}
     
     finalizarInteracaoTiaAline();
   }
