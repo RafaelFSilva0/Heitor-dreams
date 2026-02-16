@@ -1,66 +1,96 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heitor's Dreams</title>
+    <title>Heitor Dreams</title>
     <style>
-        /* Add your CSS styles here */
+        /* CSS styles go here */
+        body { font-family: Arial, sans-serif; }
+        /* additional styles */
     </style>
 </head>
 <body>
-    <h1>Bem-vindo ao mundo de Heitor!</h1>
+    <div id="tiobrunoX" style="position: absolute; left: calc(12%);"> <!-- Position Tio Bruno -->
+        <h1>Tio Bruno's Repertório</h1>
+        <button onclick="iniciarInteracaoTioBruno()">Start Interaction</button>
+        <div id="menuRepertorio">
+            <!-- Menu will be populated by JavaScript -->
+        </div>
+    </div>
+
     <script>
+        // JavaScript functions
         function iniciarInteracaoTioBruno() {
-            alert("Olá pequenino, tudo bem?");
-            alert("Meu nome é Bruno, o Bardo! Canto histórias magníficas.");
-            alert("Você, mesmo pequeno tem cara de que já viveu muitas coisas, compartilhe comigo, cantarei histórias em seu nome!");
+            // Initialize interaction
+            alert("Welcome to Tio Bruno's show!");
+            abrirMenuRepertorioBruno();
         }
 
         function abrirMenuRepertorioBruno() {
-            const menu = [
-                { tema: '⚔️ A luta contra a Tina', rima: 'Tina, uma guerreira em ação,\nDesafiando com garra, determinação!' },
-                { tema: '✋ Batalha contra a Laura', rima: 'Laura, firme com sua espada,\nNa batalha, brava e bem treinada!' },
-                { tema: '🍪 O delicioso churros', rima: 'Churros quentes, doce na mão,\nUma alegria, pura satisfação!' },
-                { tema: '🎸 A música que ele tocou', rima: 'Notas dançando, um som divinal,\nMúsica sagrada, um canto imortal!' },
-                { tema: '🍺 A bagunça da taberna', rima: 'Na taberna, risos e confusão,\nHistórias e risadas em profusão!' }
-            ];
-
-            let menuText = "Selecione um tema:\n";
-            menu.forEach((item, index) => {
-                menuText += `${index + 1}. ${item.tema}\n`;
-            });
-            const choice = prompt(menuText);
-            if (choice && !isNaN(choice) && choice > 0 && choice <= menu.length) {
-                escolherRepertorioBruno(menu[choice - 1]);
-            } else {
-                alert("Seleção inválida!");
-            }
+            // Open repertoire menu
+            document.getElementById('menuRepertorio').innerHTML = `<ul>
+                <li onclick="escolherRepertorioBruno('Tina Fight')">Tina Fight</li>
+                <li onclick="escolherRepertorioBruno('Laura Battle')">Laura Battle</li>
+                <li onclick="escolherRepertorioBruno('Churros')">Churros</li>
+                <li onclick="escolherRepertorioBruno('Violin Music')">Violin Music</li>
+                <li onclick="escolherRepertorioBruno('Tavern Chaos')">Tavern Chaos</li>
+            </ul>`;
         }
 
         function fecharMenuRepertorioBruno() {
-            alert("Menu fechado!");
+            // Close menu
+            document.getElementById('menuRepertorio').innerHTML = '';  
         }
 
-        function escolherRepertorioBruno(repertorio) {
-            alert(repertorio.rima);
-            cantarRimaBruno(repertorio);
+        function escolherRepertorioBruno(theme) {
+            // Choose repertoire
+            switch (theme) {
+                case 'Tina Fight':
+                    cantarRimaBruno('Tina Fight');
+                    break;
+                case 'Laura Battle':
+                    cantarRimaBruno('Laura Battle');
+                    break;
+                case 'Churros':
+                    cantarRimaBruno('Churros');
+                    break;
+                case 'Violin Music':
+                    cantarRimaBruno('Violin Music');
+                    break;
+                case 'Tavern Chaos':
+                    cantarRimaBruno('Tavern Chaos');
+                    break;
+            }
+            finalizarInteracaoTioBruno();
         }
 
-        function cantarRimaBruno(repertorio) {
-            alert(`Canto sobre: ${repertorio.tema}\n${repertorio.rima}`);
+        function cantarRimaBruno(theme) {
+            // Dialogue and rhymes based on theme
+            switch (theme) {
+                case 'Tina Fight':
+                    alert("Fighting words for Tina!");
+                    break;
+                case 'Laura Battle':
+                    alert("Laura's battle calls!");
+                    break;
+                case 'Churros':
+                    alert("Churros are delicious and sweet!");
+                    break;
+                case 'Violin Music':
+                    alert("Sweet sound of the violin!");
+                    break;
+                case 'Tavern Chaos':
+                    alert("Welcome to the tavern chaos!");
+                    break;
+            }
         }
 
         function finalizarInteracaoTioBruno() {
-            alert("A interação foi concluída. Até a próxima!");
+            // End interaction
+            fecharMenuRepertorioBruno();
+            alert("Thanks for visiting Tio Bruno's show!");
         }
-
-        // exemplo de invocação
-        const tiobrunoX = window.innerWidth * 0.12;
-        iniciarInteracaoTioBruno();
-        abrirMenuRepertorioBruno();
-        fecharMenuRepertorioBruno();
-        finalizarInteracaoTioBruno();
     </script>
 </body>
 </html>
