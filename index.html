@@ -1,40 +1,66 @@
-function posicionarNPCsLevel6() {
-    // Updated tiobrunoX positioning
-    tiobrunoX = window.innerWidth * 0.12;
-    // Additional logic for positioning NPCs...
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heitor's Dreams</title>
+    <style>
+        /* Add your CSS styles here */
+    </style>
+</head>
+<body>
+    <h1>Bem-vindo ao mundo de Heitor!</h1>
+    <script>
+        function iniciarInteracaoTioBruno() {
+            alert("Olá pequenino, tudo bem?");
+            alert("Meu nome é Bruno, o Bardo! Canto histórias magníficas.");
+            alert("Você, mesmo pequeno tem cara de que já viveu muitas coisas, compartilhe comigo, cantarei histórias em seu nome!");
+        }
 
-function iniciarInteracaoTioBruno() {
-    // Dialogue sequence
-    console.log("Olá pequenino, tudo bem?");
-    // More dialogue...
-}
+        function abrirMenuRepertorioBruno() {
+            const menu = [
+                { tema: '⚔️ A luta contra a Tina', rima: 'Tina, uma guerreira em ação,\nDesafiando com garra, determinação!' },
+                { tema: '✋ Batalha contra a Laura', rima: 'Laura, firme com sua espada,\nNa batalha, brava e bem treinada!' },
+                { tema: '🍪 O delicioso churros', rima: 'Churros quentes, doce na mão,\nUma alegria, pura satisfação!' },
+                { tema: '🎸 A música que ele tocou', rima: 'Notas dançando, um som divinal,\nMúsica sagrada, um canto imortal!' },
+                { tema: '🍺 A bagunça da taberna', rima: 'Na taberna, risos e confusão,\nHistórias e risadas em profusão!' }
+            ];
 
-function abrirMenuRepertorioBruno() {
-    // Logic to open the repertoire menu for Bruno...
-}
+            let menuText = "Selecione um tema:\n";
+            menu.forEach((item, index) => {
+                menuText += `${index + 1}. ${item.tema}\n`;
+            });
+            const choice = prompt(menuText);
+            if (choice && !isNaN(choice) && choice > 0 && choice <= menu.length) {
+                escolherRepertorioBruno(menu[choice - 1]);
+            } else {
+                alert("Seleção inválida!");
+            }
+        }
 
-function fecharMenuRepertorioBruno() {
-    // Logic to close the repertoire menu for Bruno...
-}
+        function fecharMenuRepertorioBruno() {
+            alert("Menu fechado!");
+        }
 
-function escolherRepertorioBruno() {
-    // Logic to choose the repertoire for Bruno...
-}
+        function escolherRepertorioBruno(repertorio) {
+            alert(repertorio.rima);
+            cantarRimaBruno(repertorio);
+        }
 
-function cantarRimaBruno() {
-    // Rhymes for Tina fight
-    console.log("Rima for Tina fight...");
-    // Rhymes for Laura battle
-    console.log("Rima for Laura battle...");
-    // Rhymes for churros
-    console.log("Rima for churros...");
-    // Rhymes for violin music
-    console.log("Rima for violin music...");
-    // Rhymes for tavern chaos
-    console.log("Rima for tavern chaos...");
-}
+        function cantarRimaBruno(repertorio) {
+            alert(`Canto sobre: ${repertorio.tema}\n${repertorio.rima}`);
+        }
 
-function finalizarInteracaoTioBruno() {
-    // Logic to finalize interaction with Tio Bruno...
-}
+        function finalizarInteracaoTioBruno() {
+            alert("A interação foi concluída. Até a próxima!");
+        }
+
+        // exemplo de invocação
+        const tiobrunoX = window.innerWidth * 0.12;
+        iniciarInteracaoTioBruno();
+        abrirMenuRepertorioBruno();
+        fecharMenuRepertorioBruno();
+        finalizarInteracaoTioBruno();
+    </script>
+</body>
+</html>
