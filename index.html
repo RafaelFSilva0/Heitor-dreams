@@ -3767,49 +3767,18 @@
         gap: 30px;
       `;
 
-      // Div para os personagens
-      const personagensDiv = document.createElement("div");
-      personagensDiv.style.cssText = `
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        width: 80%;
-        height: 300px;
-        gap: 40px;
+      // Adicionar imagem th.png com animação flutuante
+      const imagemAnimada = document.createElement("img");
+      imagemAnimada.src = "th.png";
+      imagemAnimada.alt = "Conversa";
+      imagemAnimada.style.cssText = `
+        width: 200px;
+        height: 200px;
+        image-rendering: pixelated;
+        animation: flutuaImagem 2s ease-in-out infinite;
       `;
 
-      // Heitor (esquerda)
-      const heitorAnimado = document.createElement("div");
-      heitorAnimado.style.cssText = `
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        animation: flutuaHeitor 2s ease-in-out infinite;
-      `;
-      heitorAnimado.innerHTML = `
-        <img src="heitor.png" alt="Heitor" style="width: 150px; height: 150px; image-rendering: pixelated;">
-        <p style="color: #FFD700; font-weight: bold; text-shadow: 2px 2px black;">HEITOR</p>
-      `;
-
-      // Tio Bruno (direita)
-      const tioBrunoAnimado = document.createElement("div");
-      tioBrunoAnimado.style.cssText = `
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        animation: flutuaBruno 2s ease-in-out infinite;
-      `;
-      tioBrunoAnimado.innerHTML = `
-        <img src="tiobruno.png" alt="Tio Bruno" style="width: 150px; height: 150px; image-rendering: pixelated;">
-        <p style="color: #FFD700; font-weight: bold; text-shadow: 2px 2px black;">TIO BRUNO</p>
-      `;
-
-      personagensDiv.appendChild(heitorAnimado);
-      personagensDiv.appendChild(tioBrunoAnimado);
-
-      // Div para a frase carinhosa
+      // Div para a frase com quebras de linha
       const fraseDiv = document.createElement("div");
       fraseDiv.id = "frase-conversa";
       fraseDiv.style.cssText = `
@@ -3820,17 +3789,18 @@
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
         min-height: 60px;
         max-width: 600px;
+        white-space: pre-wrap;
       `;
 
-      animacaoContainer.appendChild(personagensDiv);
+      animacaoContainer.appendChild(imagemAnimada);
       animacaoContainer.appendChild(fraseDiv);
       document.body.appendChild(animacaoContainer);
 
       // Adicionar estilos de animação ao head
       adicionarEstilosAnimacao();
 
-      // Typing effect para a frase
-      const frase = "Eles riem e se divertem por muito tempo enquanto conversam 😊";
+      // Typing effect para a frase com quebras de linha
+      const frase = "Eles riem e se divertem\npor muito tempo enquanto\nconversam 😊";
       typeTextAnimacao(fraseDiv, frase, 80).then(() => {
         // Aguardar 3 segundos antes de remover a animação
         setTimeout(() => {
@@ -3852,21 +3822,12 @@
     const style = document.createElement("style");
     style.id = "estilos-animacao";
     style.textContent = `
-      @keyframes flutuaHeitor {
+      @keyframes flutuaImagem {
         0%, 100% { 
           transform: translateY(0px);
         }
         50% { 
           transform: translateY(-20px);
-        }
-      }
-
-      @keyframes flutuaBruno {
-        0%, 100% { 
-          transform: translateY(-20px);
-        }
-        50% { 
-          transform: translateY(0px);
         }
       }
 
