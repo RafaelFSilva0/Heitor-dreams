@@ -1278,33 +1278,33 @@
 </div>
 
 <!-- MENU REPERTÓRIO TIO BRUNO -->
-<div id="bruno-repertorio-menu">
+<div id="bruno-repertorio-menu" role="dialog" aria-modal="true" aria-labelledby="bruno-menu-title">
   <div class="bruno-menu-content">
-    <h2>🎭 REPERTÓRIO DO TIO BRUNO 🎭</h2>
+    <h2 id="bruno-menu-title">🎭 REPERTÓRIO DO TIO BRUNO 🎭</h2>
     <p class="subtitle">Escolha uma rima para eu cantar!</p>
     <div class="bruno-rimas-grid">
-      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('tina')">
+      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('tina')" aria-label="Escolher Rima da Tina - A Gata Arranhadora">
         <span class="icon">🎭</span>
         <span>Rima da Tina - A Gata Arranhadora</span>
       </button>
-      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('laura')">
+      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('laura')" aria-label="Escolher Rima da Laura - A Princesa das Cócegas">
         <span class="icon">👸</span>
         <span>Rima da Laura - A Princesa das Cócegas</span>
       </button>
-      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('churros')">
+      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('churros')" aria-label="Escolher Rima dos Churros - O Segredo da Vó Didi">
         <span class="icon">🍪</span>
         <span>Rima dos Churros - O Segredo da Vó Didi</span>
       </button>
-      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('violao')">
+      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('violao')" aria-label="Escolher Rima do Violão - O Legado do Vó Deco">
         <span class="icon">🎸</span>
         <span>Rima do Violão - O Legado do Vó Deco</span>
       </button>
-      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('taberna')">
+      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('taberna')" aria-label="Escolher Rima da Taberna - O Caos Divertido">
         <span class="icon">🍺</span>
         <span>Rima da Taberna - O Caos Divertido</span>
       </button>
     </div>
-    <button class="bruno-menu-close-btn" onclick="fecharMenuRepertorioBruno()">Fechar Menu</button>
+    <button class="bruno-menu-close-btn" onclick="fecharMenuRepertorioBruno()" aria-label="Fechar menu de repertório">Fechar Menu</button>
   </div>
 </div>
 
@@ -3803,26 +3803,21 @@
     menu.style.display = "flex";
   }
 
-  function fecharMenuRepertorioBruno() {
+  async function fecharMenuRepertorioBruno() {
     const menu = document.getElementById("bruno-repertorio-menu");
     menu.style.display = "none";
     
     // Se uma rima foi selecionada, finalizar a interação
     if (brunoRepertorioSelecionado) {
-      setTimeout(() => {
-        showDialog("TIO BRUNO:", "Espero que tenha gostado da minha apresentação!").then(() => {
-          showDialog("TIO BRUNO:", "Volte sempre que quiser ouvir mais! A música nos une!").then(() => {
-            finalizarInteracaoTioBruno();
-          });
-        });
-      }, 300);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      await showDialog("TIO BRUNO:", "Espero que tenha gostado da minha apresentação!");
+      await showDialog("TIO BRUNO:", "Volte sempre que quiser ouvir mais! A música nos une!");
+      finalizarInteracaoTioBruno();
     } else {
       // Se não selecionou nada, volta sem finalizar completamente
-      setTimeout(() => {
-        showDialog("TIO BRUNO:", "Ah, que pena... Mas estou aqui se mudar de ideia!").then(() => {
-          finalizarInteracaoTioBruno();
-        });
-      }, 300);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      await showDialog("TIO BRUNO:", "Ah, que pena... Mas estou aqui se mudar de ideia!");
+      finalizarInteracaoTioBruno();
     }
   }
 
