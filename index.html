@@ -1554,6 +1554,8 @@
   const HEITOR_HEIGHT = 120; // NÃO MUDE - Tamanho fixo do Heitor
   const NPC_PROXIMITY_THRESHOLD = 200; // Distância para mostrar prompt de interação
   const INTERACTION_PROMPT_OFFSET = 280; // Offset vertical do prompt de interação
+  const CINEMATIC_SCENE_DURATION = 5500; // Duration to display cinematic scene (5.5 seconds)
+  const CINEMATIC_FADE_OUT_DURATION = 500; // Duration of fade out animation (0.5 seconds)
   let stage = 0, gameActive = false, cutsceneActive = false, battleActive = false;
   let level2Active = false, level3Active = false, level4Active = false, level5Active = false;
   let ground = window.innerHeight * 0.40;
@@ -3804,23 +3806,24 @@
         dotsEl.style.display = "inline-block";
         spinnerEl.style.display = "block";
         
-        // Wait 5-6 seconds then transition
+        // Wait for the scene to display, then transition
         setTimeout(() => {
           // Fade out animation
-          scene.style.animation = "fadeOut 0.5s ease-out";
+          scene.style.animation = `fadeOut ${CINEMATIC_FADE_OUT_DURATION}ms ease-out`;
           setTimeout(() => {
             scene.classList.remove("show");
             scene.style.animation = "";
             resolve();
-          }, 500);
-        }, 5500);
+          }, CINEMATIC_FADE_OUT_DURATION);
+        }, CINEMATIC_SCENE_DURATION);
       });
     });
   }
 
   function abrirMenuRepertorioBruno() {
-    // Placeholder function for Tio Bruno's repertoire menu
-    // This will be implemented in the future
+    // TODO: Implement Tio Bruno's repertoire menu
+    // Placeholder function - will be implemented in the future
+    // For now, just finalize the interaction
     console.log("Abrindo menu de repertório do Tio Bruno...");
     finalizarInteracaoTioBruno();
   }
