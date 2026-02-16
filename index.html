@@ -1358,7 +1358,7 @@
 
   <!-- WAITING ANIMATION FOR TIO BRUNO -->
   <div id="waiting-animation">
-    <p>Heitor passou um tempo conversando e contando as histórias para o Tio Bruno o bardo<span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span></p>
+    <p>Heitor passou um tempo conversando e contando as histórias para o Tio Bruno, o bardo<span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span></p>
   </div>
 
   <!-- REPERTOIRE MENU FOR TIO BRUNO -->
@@ -3823,6 +3823,9 @@
       case 'taberna':
         texto = "🎵 'Na taberna alegre, onde todos se encontram, histórias e risadas, amizades que afloram. Com música e festa, o lugar ganha vida, uma noite mágica que nunca é esquecida!' 🎵";
         break;
+      default:
+        texto = "🎵 'Uma melodia suave ecoa pelo ar, trazendo paz e alegria a quem puder escutar!' 🎵";
+        break;
     }
     
     // Show Tio Bruno singing the rhyme
@@ -3841,8 +3844,10 @@
   function mostrarSaidaLevel6() {
     // Show the exit arrow to indicate level completion
     const exitArrow = document.getElementById("exit-arrow");
-    exitArrow.style.display = "block";
-    exitArrow.style.color = "#FFD700";
+    if (exitArrow) {
+      exitArrow.style.display = "block";
+      exitArrow.style.color = "#FFD700";
+    }
   }
 
   async function iniciarInteracaoVomari() {
