@@ -1137,6 +1137,153 @@
     0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
     100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
+
+  /* ===== CINEMATIC SCENE STYLES ===== */
+  #cinematic-scene {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  #cinematic-scene.show {
+    display: flex;
+  }
+
+  #cinematic-scene.fade-out {
+    animation: fadeOut 0.5s ease-out;
+  }
+
+  .cinematic-container {
+    width: 90%;
+    max-width: 1200px;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding: 40px;
+    box-sizing: border-box;
+  }
+
+  .cinematic-characters {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    width: 100%;
+    margin-bottom: 50px;
+  }
+
+  .cinematic-character {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: characterBounce 2s ease-in-out infinite;
+  }
+
+  .cinematic-character:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .cinematic-character:nth-child(2) {
+    animation-delay: 0.5s;
+  }
+
+  .cinematic-character img {
+    width: 300px;
+    height: 300px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 10px 30px rgba(255, 215, 0, 0.5));
+  }
+
+  .cinematic-character-name {
+    font-size: 28px;
+    font-weight: bold;
+    color: #FFD700;
+    margin-top: 15px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    font-family: 'Courier New', monospace;
+  }
+
+  .cinematic-message {
+    text-align: center;
+    background: rgba(139, 90, 43, 0.8);
+    border: 4px solid #FFD700;
+    border-radius: 15px;
+    padding: 30px 50px;
+    max-width: 800px;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  }
+
+  .cinematic-text {
+    font-size: 32px;
+    color: #f5e6c8;
+    font-family: 'Courier New', monospace;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    line-height: 1.5;
+    min-height: 50px;
+  }
+
+  .cinematic-dots {
+    display: inline-block;
+    margin-left: 10px;
+  }
+
+  .cinematic-dots span {
+    animation: blink 1.4s infinite;
+    font-size: 32px;
+    color: #FFD700;
+  }
+
+  .cinematic-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .cinematic-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  .cinematic-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 215, 0, 0.3);
+    border-top-color: #FFD700;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto 0;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes characterBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 </style>
 </head>
 <body>
@@ -1239,6 +1386,29 @@
   <img src="violao.png" id="violao">
   <img src="tiobruno.png" id="tiobruno">
   <img src="vomari.png" id="vomari">
+
+  <!-- CINEMATIC SCENE -->
+  <div id="cinematic-scene">
+    <div class="cinematic-container">
+      <div class="cinematic-characters">
+        <div class="cinematic-character">
+          <img src="heitor.png" alt="Heitor">
+          <div class="cinematic-character-name">HEITOR</div>
+        </div>
+        <div class="cinematic-character">
+          <img src="tiobruno.png" alt="Tio Bruno">
+          <div class="cinematic-character-name">TIO BRUNO</div>
+        </div>
+      </div>
+      <div class="cinematic-message">
+        <div class="cinematic-text" id="cinematic-text"></div>
+        <div class="cinematic-dots" id="cinematic-dots">
+          <span>.</span><span>.</span><span>.</span>
+        </div>
+        <div class="cinematic-spinner" id="cinematic-spinner"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- CAIXA DE INTERAÇÃO COM NPCs -->
   <div id="interaction-prompt">
@@ -1388,6 +1558,10 @@
   const HEITOR_HEIGHT = 120; // NÃO MUDE - Tamanho fixo do Heitor
   const NPC_PROXIMITY_THRESHOLD = 200; // Distância para mostrar prompt de interação
   const INTERACTION_PROMPT_OFFSET = 280; // Offset vertical do prompt de interação
+  const CINEMATIC_SCENE_DURATION = 5500; // Duração da cena cinematográfica (5.5 segundos)
+  const CINEMATIC_FADE_OUT_DURATION = 500; // Duração da animação de fade out (0.5 segundos)
+  const CINEMATIC_TYPEWRITER_SPEED = 60; // Velocidade do efeito de máquina de escrever (milissegundos)
+  const CINEMATIC_PHRASE = "Eles riem e se divertem por muito tempo enquanto conversam 😊"; // Frase descrevendo a conversa entre Heitor e Tio Bruno
   let stage = 0, gameActive = false, cutsceneActive = false, battleActive = false;
   let level2Active = false, level3Active = false, level4Active = false, level5Active = false;
   let ground = window.innerHeight * 0.40;
@@ -3616,6 +3790,47 @@
     }
   }
 
+  // CINEMATIC SCENE FUNCTIONS
+  function exibirCenaConversaBruno() {
+    return new Promise((resolve) => {
+      const scene = document.getElementById("cinematic-scene");
+      const textEl = document.getElementById("cinematic-text");
+      const dotsEl = document.getElementById("cinematic-dots");
+      const spinnerEl = document.getElementById("cinematic-spinner");
+      
+      // Show the scene
+      scene.classList.add("show");
+      
+      // Hide dots and spinner initially
+      dotsEl.style.display = "none";
+      spinnerEl.style.display = "none";
+      
+      // Typewriter effect for the loving phrase
+      typeText(textEl, CINEMATIC_PHRASE, CINEMATIC_TYPEWRITER_SPEED).then(() => {
+        // Show animated dots after text is complete
+        dotsEl.style.display = "inline-block";
+        spinnerEl.style.display = "block";
+        
+        // Wait for the scene to display, then transition
+        setTimeout(() => {
+          // Fade out animation
+          scene.classList.add("fade-out");
+          setTimeout(() => {
+            scene.classList.remove("show", "fade-out");
+            resolve();
+          }, CINEMATIC_FADE_OUT_DURATION);
+        }, CINEMATIC_SCENE_DURATION);
+      });
+    });
+  }
+
+  function abrirMenuRepertorioBruno() {
+    // TODO: Implement Tio Bruno's repertoire menu
+    // Placeholder function - will be implemented in the future
+    // For now, just finalize the interaction
+    finalizarInteracaoTioBruno();
+  }
+
   async function iniciarInteracaoTioBruno() {
     if (proximoNPC !== 'tioBruno') return;
     if (!level6Active || tiobrunoInteractionActive || tiobrunoInteractionCompleted) return;
@@ -3627,11 +3842,17 @@
       proximoNPC = null;
       document.getElementById("interaction-prompt").style.display = "none";
       
-      // Placeholder dialogue - pode ser customizado depois
+      // Tio Bruno dialogue
       await showDialog("TIO BRUNO:", "Olá, Heitor! Seja bem-vindo!");
       await showDialog("TIO BRUNO:", "Estou aqui tocando minha música favorita.");
+      await showDialog("HEITOR:", "Olá, Tio Bruno! Que bom te encontrar!");
+      await showDialog("TIO BRUNO:", "Você parece ter vivido muitas aventuras, compartilhe-as comigo!");
       
-      finalizarInteracaoTioBruno();
+      // Display cinematic scene
+      await exibirCenaConversaBruno();
+      
+      // Transition to repertoire menu
+      abrirMenuRepertorioBruno();
     }
   }
 
