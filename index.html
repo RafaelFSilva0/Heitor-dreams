@@ -1157,6 +1157,10 @@
     display: flex;
   }
 
+  #cinematic-scene.fade-out {
+    animation: fadeOut 0.5s ease-out;
+  }
+
   .cinematic-container {
     width: 90%;
     max-width: 1200px;
@@ -1556,6 +1560,8 @@
   const INTERACTION_PROMPT_OFFSET = 280; // Offset vertical do prompt de interação
   const CINEMATIC_SCENE_DURATION = 5500; // Duration to display cinematic scene (5.5 seconds)
   const CINEMATIC_FADE_OUT_DURATION = 500; // Duration of fade out animation (0.5 seconds)
+  const CINEMATIC_TYPEWRITER_SPEED = 60; // Speed of typewriter effect in milliseconds
+  const CINEMATIC_PHRASE = "Eles riem e se divertem por muito tempo enquanto conversam 😊"; // Loving phrase for Tio Bruno scene
   let stage = 0, gameActive = false, cutsceneActive = false, battleActive = false;
   let level2Active = false, level3Active = false, level4Active = false, level5Active = false;
   let ground = window.innerHeight * 0.40;
@@ -3800,8 +3806,7 @@
       spinnerEl.style.display = "none";
       
       // Typewriter effect for the loving phrase
-      const phrase = "Eles riem e se divertem por muito tempo enquanto conversam 😊";
-      typeText(textEl, phrase, 60).then(() => {
+      typeText(textEl, CINEMATIC_PHRASE, CINEMATIC_TYPEWRITER_SPEED).then(() => {
         // Show animated dots after text is complete
         dotsEl.style.display = "inline-block";
         spinnerEl.style.display = "block";
@@ -3809,10 +3814,9 @@
         // Wait for the scene to display, then transition
         setTimeout(() => {
           // Fade out animation
-          scene.style.animation = `fadeOut ${CINEMATIC_FADE_OUT_DURATION}ms ease-out`;
+          scene.classList.add("fade-out");
           setTimeout(() => {
-            scene.classList.remove("show");
-            scene.style.animation = "";
+            scene.classList.remove("show", "fade-out");
             resolve();
           }, CINEMATIC_FADE_OUT_DURATION);
         }, CINEMATIC_SCENE_DURATION);
