@@ -1137,6 +1137,123 @@
     0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
     100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
+
+  /* ===== MENU REPERTÓRIO BRUNO ===== */
+  #bruno-repertorio-menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 700;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .bruno-menu-content {
+    background: linear-gradient(135deg, #2c1810, #1a0f0a);
+    border: 6px solid #FFD700;
+    border-radius: 25px;
+    padding: 50px;
+    max-width: 700px;
+    color: #ffffff;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.6);
+    animation: popIn 0.3s ease-out;
+  }
+
+  .bruno-menu-content h2 {
+    font-size: 38px;
+    color: #FFD700;
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);
+  }
+
+  .bruno-menu-content .subtitle {
+    font-size: 18px;
+    color: #f5e6c8;
+    margin-bottom: 35px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  .bruno-rimas-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-bottom: 30px;
+  }
+
+  .bruno-rima-btn {
+    padding: 18px 30px;
+    font-size: 20px;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #8b5a2b, #5a3a1a);
+    color: #f5e6c8;
+    border: 4px solid #FFD700;
+    border-radius: 12px;
+    cursor: pointer;
+    text-shadow: 2px 2px black;
+    font-weight: bold;
+    transition: all 0.3s;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .bruno-rima-btn:hover {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    transform: translateX(10px) scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+  }
+
+  .bruno-rima-btn .icon {
+    font-size: 32px;
+    min-width: 40px;
+  }
+
+  .bruno-menu-close-btn {
+    padding: 15px 50px;
+    font-size: 20px;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #ff6b6b, #cc5555);
+    color: #fff;
+    border: 3px solid #ff4444;
+    border-radius: 10px;
+    cursor: pointer;
+    text-shadow: 2px 2px black;
+    font-weight: bold;
+    transition: all 0.3s;
+  }
+
+  .bruno-menu-close-btn:hover {
+    background: linear-gradient(135deg, #ff4444, #aa3333);
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 68, 68, 0.6);
+  }
+
+  /* ===== EFEITO VISUAL DE CANTO ===== */
+  #bruno-canto-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%);
+    z-index: 650;
+    pointer-events: none;
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.9; }
+  }
 </style>
 </head>
 <body>
@@ -1159,6 +1276,40 @@
     <button class="modal-close-btn" onclick="fecharConsideracoes()">Fechar</button>
   </div>
 </div>
+
+<!-- MENU REPERTÓRIO TIO BRUNO -->
+<div id="bruno-repertorio-menu">
+  <div class="bruno-menu-content">
+    <h2>🎭 REPERTÓRIO DO TIO BRUNO 🎭</h2>
+    <p class="subtitle">Escolha uma rima para eu cantar!</p>
+    <div class="bruno-rimas-grid">
+      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('tina')">
+        <span class="icon">🎭</span>
+        <span>Rima da Tina - A Gata Arranhadora</span>
+      </button>
+      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('laura')">
+        <span class="icon">👸</span>
+        <span>Rima da Laura - A Princesa das Cócegas</span>
+      </button>
+      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('churros')">
+        <span class="icon">🍪</span>
+        <span>Rima dos Churros - O Segredo da Vó Didi</span>
+      </button>
+      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('violao')">
+        <span class="icon">🎸</span>
+        <span>Rima do Violão - O Legado do Vó Deco</span>
+      </button>
+      <button class="bruno-rima-btn" onclick="escolherRepertorioBruno('taberna')">
+        <span class="icon">🍺</span>
+        <span>Rima da Taberna - O Caos Divertido</span>
+      </button>
+    </div>
+    <button class="bruno-menu-close-btn" onclick="fecharMenuRepertorioBruno()">Fechar Menu</button>
+  </div>
+</div>
+
+<!-- OVERLAY VISUAL PARA CANTO -->
+<div id="bruno-canto-overlay"></div>
 
 <!-- TELA DO JOGO -->
 <div id="game-screen">
@@ -1445,6 +1596,7 @@
   let tiobrunoY = 0;
   let tiobrunoInteractionActive = false;
   let tiobrunoInteractionCompleted = false;
+  let brunoRepertorioSelecionado = null;
   let vomariX = 0;
   let vomariY = 0;
   let vomariInteractionActive = false;
@@ -3627,11 +3779,14 @@
       proximoNPC = null;
       document.getElementById("interaction-prompt").style.display = "none";
       
-      // Placeholder dialogue - pode ser customizado depois
-      await showDialog("TIO BRUNO:", "Olá, Heitor! Seja bem-vindo!");
-      await showDialog("TIO BRUNO:", "Estou aqui tocando minha música favorita.");
+      // Diálogos iniciais do Tio Bruno
+      await showDialog("TIO BRUNO:", "Olá, pequeno Heitor! Que prazer te ver aqui!");
+      await showDialog("TIO BRUNO:", "Estou aqui tocando minhas músicas favoritas nesta plataforma musical.");
+      await showDialog("TIO BRUNO:", "Você sabe, eu adoro cantar rimas sobre nossa família e nossas aventuras!");
+      await showDialog("TIO BRUNO:", "Quer ouvir uma das minhas composições? Tenho várias no meu repertório!");
       
-      finalizarInteracaoTioBruno();
+      // Abrir menu de repertório
+      abrirMenuRepertorioBruno();
     }
   }
 
@@ -3641,6 +3796,140 @@
     document.getElementById("interaction-prompt").style.display = "none";
     gameActive = true;
     gameLoop();
+  }
+
+  function abrirMenuRepertorioBruno() {
+    const menu = document.getElementById("bruno-repertorio-menu");
+    menu.style.display = "flex";
+  }
+
+  function fecharMenuRepertorioBruno() {
+    const menu = document.getElementById("bruno-repertorio-menu");
+    menu.style.display = "none";
+    
+    // Se uma rima foi selecionada, finalizar a interação
+    if (brunoRepertorioSelecionado) {
+      setTimeout(() => {
+        showDialog("TIO BRUNO:", "Espero que tenha gostado da minha apresentação!").then(() => {
+          showDialog("TIO BRUNO:", "Volte sempre que quiser ouvir mais! A música nos une!").then(() => {
+            finalizarInteracaoTioBruno();
+          });
+        });
+      }, 300);
+    } else {
+      // Se não selecionou nada, volta sem finalizar completamente
+      setTimeout(() => {
+        showDialog("TIO BRUNO:", "Ah, que pena... Mas estou aqui se mudar de ideia!").then(() => {
+          finalizarInteracaoTioBruno();
+        });
+      }, 300);
+    }
+  }
+
+  async function escolherRepertorioBruno(tipo) {
+    brunoRepertorioSelecionado = tipo;
+    
+    // Fechar o menu
+    const menu = document.getElementById("bruno-repertorio-menu");
+    menu.style.display = "none";
+    
+    // Mensagem de preparação
+    await showDialog("TIO BRUNO:", "Ótima escolha! Deixa eu preparar minha voz...");
+    await showDialog("TIO BRUNO:", "Lá vai! Presta atenção na letra!");
+    
+    // Iniciar o canto
+    await cantarRimaBruno();
+  }
+
+  async function cantarRimaBruno() {
+    const tipo = brunoRepertorioSelecionado;
+    
+    // Ativar overlay visual
+    const overlay = document.getElementById("bruno-canto-overlay");
+    overlay.style.display = "block";
+    
+    // Definir rimas baseadas no tipo selecionado
+    const rimas = {
+      'tina': {
+        titulo: "🎭 Rima da Tina 🎭",
+        versos: [
+          "Era uma vez uma gata chamada Tina,",
+          "Que adorava arranhar de manhã à tardinha!",
+          "Com suas garras afiadas e jeito sapeca,",
+          "Fazia todo mundo correr pra biblioteca!",
+          "Mas no fundo era doce, só queria brincar,",
+          "E quando dormia, só sabia ronronar!"
+        ]
+      },
+      'laura': {
+        titulo: "👸 Rima da Laura 👸",
+        versos: [
+          "Laura é a princesa das cócegas sem igual,",
+          "Ri tanto que até esquece o mal!",
+          "Quando alguém faz cócegas em seus pezinhos,",
+          "Solta risadas que parecem passarinhos!",
+          "É a alegria da casa, sempre a sorrir,",
+          "Com sua risada contagiante a nos curtir!"
+        ]
+      },
+      'churros': {
+        titulo: "🍪 Rima dos Churros 🍪",
+        versos: [
+          "Vó Didi faz churros de doce de leite,",
+          "Com uma receita que é puro deleite!",
+          "Crocante por fora, macio por dentro,",
+          "É impossível comer só um, eu garanto!",
+          "O segredo é o amor que ela coloca,",
+          "Por isso que todo mundo adora e se arroca!"
+        ]
+      },
+      'violao': {
+        titulo: "🎸 Rima do Violão 🎸",
+        versos: [
+          "Vó Deco tinha um violão especial,",
+          "Que tocava músicas do bem e do mal!",
+          "Era herança de seu filho querido,",
+          "Que hoje vive em nosso coração sentido.",
+          "Cada corda conta uma história de amor,",
+          "E quando toca, afasta qualquer dor!"
+        ]
+      },
+      'taberna': {
+        titulo: "🍺 Rima da Taberna 🍺",
+        versos: [
+          "Na taberna o caos é organizado,",
+          "Com drinks e comidas de todo lado!",
+          "Tio Guigo vende perfumes refinados,",
+          "Enquanto Tia Aline serve drinks bem gelados!",
+          "É um lugar de risadas e confusão,",
+          "Onde todos se sentem no coração!"
+        ]
+      }
+    };
+    
+    const rimaEscolhida = rimas[tipo];
+    
+    if (rimaEscolhida) {
+      // Título da rima
+      await showDialog("TIO BRUNO CANTA:", rimaEscolhida.titulo);
+      
+      // Cantar cada verso com efeito
+      for (let i = 0; i < rimaEscolhida.versos.length; i++) {
+        await showDialog("TIO BRUNO:", rimaEscolhida.versos[i]);
+        
+        // Pequena pausa entre versos para dar ritmo
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+      
+      // Finalização do canto
+      await showDialog("TIO BRUNO:", "🎵 *Termina com um acorde perfeito* 🎵");
+    }
+    
+    // Desativar overlay visual após o canto
+    overlay.style.display = "none";
+    
+    // Mensagem final
+    await showDialog("TIO BRUNO:", "E aí, gostou? Eu adoro cantar essas histórias!");
   }
 
   async function iniciarInteracaoVomari() {
