@@ -1574,10 +1574,13 @@
   let tiobrunoY = 0;
   let tiobrunoInteractionActive = false;
   let tiobrunoInteractionCompleted = false;
+  let tioBrunoInteractionCompletedForVomari = false; // Control when Vó Mari can interact
   let vomariX = 0;
   let vomariY = 0;
   let vomariInteractionActive = false;
   let vomariInteractionCompleted = false;
+  let vomariDialogueStep = 0; // Track Vó Mari dialogue progress
+  let canExitLevel6 = false; // Control when player can exit Level 6
 
   // VARIÁVEL PARA CONTROLAR QUAL NPC ESTÁ MAIS PRÓXIMO
   let proximoNPC = null;
@@ -1598,7 +1601,8 @@
     'pastel': 'Um delicioso pastel de cortesia da taberna!',
     'drink': 'Uma bebida estranha que a Tia Aline fez para mim. Deveria ter aceitado as outras opções.',
     'moscowmule': 'Um Moscow Mule delicioso preparado pela Tia Aline!',
-    'pinacolada': 'Uma Piña Colada refrescante feita pela Tia Aline!'
+    'pinacolada': 'Uma Piña Colada refrescante feita pela Tia Aline!',
+    'receita': 'Uma receita secreta da Vó Mari. Feita com muito amor e carinho!'
   };
 
   // ========== FUNÇÕES DO MENU ==========
@@ -3721,7 +3725,8 @@
   }
 
   function verificarProximidadeVomari() {
-    if (!level6Active || vomariInteractionActive || vomariInteractionCompleted) return;
+    // Only allow Vó Mari interaction after Tio Bruno completes his interaction
+    if (!level6Active || vomariInteractionActive || vomariInteractionCompleted || !tioBrunoInteractionCompletedForVomari) return;
     
     const distancia = Math.abs(posX - vomariX);
     
@@ -3738,9 +3743,8 @@
   }
 
   function verificarSaidaLevel6() {
-    // Preparar saída para próximos níveis (a ser implementado)
-    if (posX >= window.innerWidth - 100) {
-      // Placeholder para transição futura
+    // Only allow exit after completing Vó Mari interaction
+    if (canExitLevel6 && posX >= window.innerWidth - 100) {
       finalizarJogo();
     }
   }
@@ -3866,6 +3870,70 @@
     });
   }
 
+  // ========== ANIMAÇÃO CINEMATOGRÁFICA - COZINHANDO COM VÓ MARI ==========
+
+  function exibirAnimacaoCozinhando() {
+    return new Promise((resolve) => {
+      // Criar container da animação
+      const animacaoContainer = document.createElement("div");
+      animacaoContainer.id = "animacao-cozinhando-container";
+      animacaoContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 350;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+      `;
+
+      // Adicionar imagem cozinhando.png em tela cheia
+      const imagemCozinhando = document.createElement("img");
+      imagemCozinhando.src = "cozinhando.png";
+      imagemCozinhando.alt = "Cozinhando";
+      imagemCozinhando.style.cssText = `
+        max-width: 90%;
+        max-height: 70%;
+        image-rendering: pixelated;
+        object-fit: contain;
+      `;
+
+      // Legenda
+      const legendaDiv = document.createElement("div");
+      legendaDiv.style.cssText = `
+        color: #FFD700;
+        font-size: 22px;
+        text-align: center;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        max-width: 800px;
+        padding: 20px;
+        line-height: 1.5;
+      `;
+      legendaDiv.innerText = "Heitor passa um longo tempo cozinhando e se divertindo com a Vó Mari. Ele nunca se sentiu tão acolhido e amado...";
+
+      animacaoContainer.appendChild(imagemCozinhando);
+      animacaoContainer.appendChild(legendaDiv);
+      document.body.appendChild(animacaoContainer);
+
+      // Aguardar 5 segundos para dar tempo do jogador absorver a cena e ler a legenda
+      setTimeout(() => {
+        animacaoContainer.style.opacity = "0";
+        animacaoContainer.style.transition = "opacity 0.8s ease-out";
+        
+        setTimeout(() => {
+          animacaoContainer.remove();
+          resolve();
+        }, 800);
+      }, 5000);
+    });
+  }
+
   async function iniciarInteracaoTioBruno() {
     if (proximoNPC !== 'tioBruno') return;
     if (!level6Active || tiobrunoInteractionActive || tiobrunoInteractionCompleted) return;
@@ -3893,6 +3961,7 @@
   function finalizarInteracaoTioBruno() {
     tiobrunoInteractionActive = false;
     tiobrunoInteractionCompleted = true;
+    tioBrunoInteractionCompletedForVomari = true; // Unlock Vó Mari interaction
     document.getElementById("interaction-prompt").style.display = "none";
     gameActive = true;
     gameLoop();
@@ -3955,12 +4024,9 @@
   }
 
   function mostrarSaidaLevel6() {
-    // Show the exit arrow to indicate level completion
-    const exitArrow = document.getElementById("exit-arrow");
-    if (exitArrow) {
-      exitArrow.style.display = "block";
-      exitArrow.style.color = "#FFD700";
-    }
+    // Exit will only be shown after Vó Mari interaction completes
+    // This function is called by Tio Bruno but will be overridden by Vó Mari sequence
+    canExitLevel6 = false; // Don't allow exit yet
   }
 
   async function iniciarInteracaoVomari() {
@@ -3974,18 +4040,66 @@
       proximoNPC = null;
       document.getElementById("interaction-prompt").style.display = "none";
       
-      // Placeholder dialogue - pode ser customizado depois
-      await showDialog("VOMARI:", "E aí, Heitor!");
-      await showDialog("VOMARI:", "Bem-vindo à nossa plataforma musical!");
+      // Diálogo inicial com Vó Mari
+      await showDialog("VÓ MARI:", "Olá Pequeno guerreiro, acabei de assar esse delicioso pão para nós");
+      await showDialog("VÓ MARI:", "Tenho uma receita secreta para aqueles que amo e protejo");
+      await showDialog("VÓ MARI:", "Ei, preciso de uma ajuda querido, me ajude com uma receita! Pressione E");
+      await showDialog("VÓ MARI:", "Vamos cozinhar!");
+      
+      // Mostrar animação de cozinhando
+      await exibirAnimacaoCozinhando();
+      
+      // Diálogos finais após cozinhar
+      await showDialog("VÓ MARI:", "Heitor, obrigado por tudo! você é tão querido");
+      await showDialog("VÓ MARI:", "Já está ficando tarde...");
+      await showDialog("VÓ MARI:", "Vá e volte sempre que quiser, e leve isso com você, sempre estarei com você");
+      
+      // Adicionar receita ao inventário
+      adicionarReceitaAoInventario();
       
       finalizarInteracaoVomari();
     }
   }
 
+  function adicionarReceitaAoInventario() {
+    // Encontrar primeiro slot vazio
+    let itemAdicionado = false;
+    for (let i = 0; i < inventoryItems.length; i++) {
+      if (inventoryItems[i] === null) {
+        inventoryItems[i] = 'receita';
+        itemAdicionado = true;
+        break;
+      }
+    }
+    
+    // Mostrar notificação apenas se o item foi adicionado
+    const notification = document.getElementById("inventory-notification");
+    if (itemAdicionado) {
+      notification.innerHTML = "✨ RECEITA ADICIONADA AO INVENTÁRIO!";
+    } else {
+      notification.innerHTML = "⚠️ INVENTÁRIO CHEIO! Não foi possível adicionar a receita.";
+    }
+    notification.style.display = "block";
+    
+    setTimeout(() => {
+      notification.style.display = "none";
+    }, 5000);
+  }
+
   function finalizarInteracaoVomari() {
     vomariInteractionActive = false;
     vomariInteractionCompleted = true;
+    canExitLevel6 = true; // Allow exit after Vó Mari completes
     document.getElementById("interaction-prompt").style.display = "none";
+    
+    // Show the exit arrow to allow leaving Level 6
+    const exitArrow = document.getElementById("exit-arrow");
+    if (exitArrow) {
+      exitArrow.style.display = "block";
+      exitArrow.style.color = "#FFD700";
+      exitArrowVisible = true;
+    }
+    
     gameActive = true;
     gameLoop();
   }
