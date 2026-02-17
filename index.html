@@ -3915,13 +3915,13 @@
         padding: 20px;
         line-height: 1.5;
       `;
-      legendaDiv.innerText = "Heitor passa um longo tempo cozinhando e se divertindo com a Vó Mari. Ele nunca se sentiu tão acolhido e amado..";
+      legendaDiv.innerText = "Heitor passa um longo tempo cozinhando e se divertindo com a Vó Mari. Ele nunca se sentiu tão acolhido e amado...";
 
       animacaoContainer.appendChild(imagemCozinhando);
       animacaoContainer.appendChild(legendaDiv);
       document.body.appendChild(animacaoContainer);
 
-      // Aguardar 5 segundos antes de remover a animação
+      // Aguardar 5 segundos para dar tempo do jogador absorver a cena e ler a legenda
       setTimeout(() => {
         animacaoContainer.style.opacity = "0";
         animacaoContainer.style.transition = "opacity 0.8s ease-out";
@@ -4044,7 +4044,7 @@
       await showDialog("VÓ MARI:", "Olá Pequeno guerreiro, acabei de assar esse delicioso pão para nós");
       await showDialog("VÓ MARI:", "Tenho uma receita secreta para aqueles que amo e protejo");
       await showDialog("VÓ MARI:", "Ei, preciso de uma ajuda querido, me ajude com uma receita! Pressione E");
-      await showDialog("VÓ MARI:", "Vó Mari diz: vamos cozinhar!");
+      await showDialog("VÓ MARI:", "Vamos cozinhar!");
       
       // Mostrar animação de cozinhando
       await exibirAnimacaoCozinhando();
@@ -4063,16 +4063,22 @@
 
   function adicionarReceitaAoInventario() {
     // Encontrar primeiro slot vazio
+    let itemAdicionado = false;
     for (let i = 0; i < inventoryItems.length; i++) {
       if (inventoryItems[i] === null) {
         inventoryItems[i] = 'receita';
+        itemAdicionado = true;
         break;
       }
     }
     
-    // Mostrar notificação
+    // Mostrar notificação apenas se o item foi adicionado
     const notification = document.getElementById("inventory-notification");
-    notification.innerHTML = "✨ RECEITA ADICIONADA AO INVENTÁRIO!";
+    if (itemAdicionado) {
+      notification.innerHTML = "✨ RECEITA ADICIONADA AO INVENTÁRIO!";
+    } else {
+      notification.innerHTML = "⚠️ INVENTÁRIO CHEIO! Não foi possível adicionar a receita.";
+    }
     notification.style.display = "block";
     
     setTimeout(() => {
