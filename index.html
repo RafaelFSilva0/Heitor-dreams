@@ -1593,7 +1593,7 @@
 
   const itemDescriptions = {
     'carta': 'Item que a vovó do churros me deu. Parece usada.',
-    'violao': 'Violão que ganhei do vovó músico! Parece usado.',
+    'violao': 'Violão que ganhei do vovÔ músico! Parece usado.',
     'perfume': 'Um perfume especial que recebi do Tio Guigo na taberna. Cheira muito bem!',
     'pastel': 'Um delicioso pastel de cortesia da taberna!',
     'drink': 'Uma bebida estranha que a Tia Aline fez para mim. Deveria ter aceitado as outras opções.',
@@ -2868,8 +2868,8 @@
       gameActive = false;
       document.getElementById("interaction-prompt").style.display = "none";
       
-      showDialog("VÓ DECO DIZ:", "Olá jovem guerreiro! Tudo bem?").then(() => {
-        showDialog("VÓ DECO DIZ:", "Somos nobres andarilhos e adoramos música! Você sabe tocar?").then(() => {
+      showDialog("VÔ DECO DIZ:", "Olá jovem guerreiro! Tudo bem?").then(() => {
+        showDialog("VÔ DECO DIZ:", "Somos nobres andarilhos e adoramos música! Você sabe tocar?").then(() => {
           mostrarOpcoesMusicaVodeco();
         });
       });
@@ -2881,7 +2881,7 @@
     const h3 = choiceMenu.querySelector("h3");
     const p = choiceMenu.querySelector("p");
     
-    h3.innerText = "🎸 VÓ DECO PERGUNTA 🎸";
+    h3.innerText = "🎸 VÔ DECO PERGUNTA 🎸";
     p.innerText = "Você sabe tocar?";
     choiceMenu.style.display = "block";
     
@@ -2909,7 +2909,7 @@
     
     if (resposta === 'sim') {
       setTimeout(() => {
-        showDialog("VÓ DECO DIZ:", "Pegue o violão!").then(() => {
+        showDialog("VÔ DECO DIZ:", "Pegue o violão!").then(() => {
           violaoDesbloqueado = true;
           telaViolaoAberta = true;
           somPrincipal.pause();
@@ -2920,7 +2920,7 @@
       }, 300);
     } else if (resposta === 'nao') {
       setTimeout(() => {
-        showDialog("VÓ DECO DIZ:", "Humm, mas pegue mesmo assim, fica bem em você.").then(() => {
+        showDialog("VÔ DECO DIZ:", "Humm, mas pegue mesmo assim, fica bem em você.").then(() => {
           violaoDesbloqueado = true;
           telaViolaoAberta = true;
           somPrincipal.pause();
@@ -2972,13 +2972,13 @@
     
     setTimeout(() => {
       if (violaoRespostaUsuario === 'sim') {
-        showDialog("VÓ DECO DIZ:", "Nossa! Você toca muito bem.").then(() => {
-          showDialog("VÓ DECO DIZ:", "Toca como meu filho! Fique com o violão.").then(() => {
+        showDialog("VÔ DECO DIZ:", "Nossa! Você toca muito bem.").then(() => {
+          showDialog("VÔ DECO DIZ:", "Toca como meu filho! Fique com o violão.").then(() => {
             finalizarViolaoEvent();
           });
         });
       } else if (violaoRespostaUsuario === 'nao') {
-        showDialog("VÓ DECO DIZ:", "Que pena, mas fique para você, quem sabe aprende a tocar como meu filho!").then(() => {
+        showDialog("VÔ DECO DIZ:", "Que pena, mas fique para você, quem sabe aprende a tocar como meu filho!").then(() => {
           finalizarViolaoEvent();
         });
       }
@@ -2995,7 +2995,7 @@
     somPrincipal.play().catch(e => console.log("Música principal não disponível"));
     
     setTimeout(() => {
-      showDialog("VÓ DECO DIZ:", "Que pena, mas fique para você, quem sabe aprende a tocar como meu filho!").then(() => {
+      showDialog("VÔ DECO DIZ:", "Que pena, mas fique para você, quem sabe aprende a tocar como meu filho!").then(() => {
         finalizarViolaoEvent();
       });
     }, 300);
@@ -3524,7 +3524,7 @@
       adicionarItensAoInventario('pastel', 'pinacolada');
     } else if (opcao === 'recusar') {
       // Player refuses, but gets a drink anyway
-      await showDialog("TIA ALINE:", "Tadinho, ele não sabe o que diz. Pressione E");
+      await showDialog("TIA ALINE:", "Tadinho, ele não sabe o que diz.");
       await showDialog("TIA ALINE:", "Fiz um especial para você GAROTO!");
       
       // Add pastel and a special mystery drink to inventory
@@ -3767,49 +3767,18 @@
         gap: 30px;
       `;
 
-      // Div para os personagens
-      const personagensDiv = document.createElement("div");
-      personagensDiv.style.cssText = `
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        width: 80%;
-        height: 300px;
-        gap: 40px;
+      // Adicionar imagem th.png com animação flutuante
+      const imagemAnimada = document.createElement("img");
+      imagemAnimada.src = "th.png";
+      imagemAnimada.alt = "Conversa";
+      imagemAnimada.style.cssText = `
+        width: 600px;
+        height: 400px;
+        image-rendering: pixelated;
+        animation: flutuaImagem 2s ease-in-out infinite;
       `;
 
-      // Heitor (esquerda)
-      const heitorAnimado = document.createElement("div");
-      heitorAnimado.style.cssText = `
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        animation: flutuaHeitor 2s ease-in-out infinite;
-      `;
-      heitorAnimado.innerHTML = `
-        <img src="heitor.png" alt="Heitor" style="width: 150px; height: 150px; image-rendering: pixelated;">
-        <p style="color: #FFD700; font-weight: bold; text-shadow: 2px 2px black;">HEITOR</p>
-      `;
-
-      // Tio Bruno (direita)
-      const tioBrunoAnimado = document.createElement("div");
-      tioBrunoAnimado.style.cssText = `
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        animation: flutuaBruno 2s ease-in-out infinite;
-      `;
-      tioBrunoAnimado.innerHTML = `
-        <img src="tiobruno.png" alt="Tio Bruno" style="width: 150px; height: 150px; image-rendering: pixelated;">
-        <p style="color: #FFD700; font-weight: bold; text-shadow: 2px 2px black;">TIO BRUNO</p>
-      `;
-
-      personagensDiv.appendChild(heitorAnimado);
-      personagensDiv.appendChild(tioBrunoAnimado);
-
-      // Div para a frase carinhosa
+      // Div para a frase com quebras de linha
       const fraseDiv = document.createElement("div");
       fraseDiv.id = "frase-conversa";
       fraseDiv.style.cssText = `
@@ -3820,17 +3789,18 @@
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
         min-height: 60px;
         max-width: 600px;
+        white-space: pre-wrap;
       `;
 
-      animacaoContainer.appendChild(personagensDiv);
+      animacaoContainer.appendChild(imagemAnimada);
       animacaoContainer.appendChild(fraseDiv);
       document.body.appendChild(animacaoContainer);
 
       // Adicionar estilos de animação ao head
       adicionarEstilosAnimacao();
 
-      // Typing effect para a frase
-      const frase = "Eles riem e se divertem por muito tempo enquanto conversam 😊";
+      // Typing effect para a frase com quebras de linha
+      const frase = "Eles riem e se divertem\npor muito tempo enquanto\nconversam 😊";
       typeTextAnimacao(fraseDiv, frase, 80).then(() => {
         // Aguardar 3 segundos antes de remover a animação
         setTimeout(() => {
@@ -3852,21 +3822,12 @@
     const style = document.createElement("style");
     style.id = "estilos-animacao";
     style.textContent = `
-      @keyframes flutuaHeitor {
+      @keyframes flutuaImagem {
         0%, 100% { 
           transform: translateY(0px);
         }
         50% { 
           transform: translateY(-20px);
-        }
-      }
-
-      @keyframes flutuaBruno {
-        0%, 100% { 
-          transform: translateY(-20px);
-        }
-        50% { 
-          transform: translateY(0px);
         }
       }
 
@@ -3961,19 +3922,19 @@
     let texto = "";
     switch(rima) {
       case 'tina':
-        texto = "🎵 'Tina é uma gatinha cheia de graça, com olhos brilhantes que conquistam a casa. Suas patinhas leves dançam pelo chão, e todo mundo ama sua doce canção!' 🎵";
+        texto = "🎵 'Das garras da sombra, coragem nasceu, Heitor lutou firme, o medo venceu. Luiza sorriu, com brilho no olhar, pois o amor de irmão sempre vem salvar.' 🎵";
         break;
       case 'laura':
-        texto = "🎵 'Laura é a dona, com jeito de rainha, protege sua Tina, a doce gatinha. Com carinho e amor, cuida com atenção, Tina e Laura têm forte conexão!' 🎵";
+        texto = "🎵 'Entre desafios, jokenpo e emoção, Laura protege com força e coração. Ganhe ou perca, a lição é clara: quem ama, cuida… e sempre ampara.' 🎵";
         break;
       case 'churros':
-        texto = "🎵 'Churros quentinho, com açúcar e canela, o doce mais gostoso, que todo mundo anhela. Crocante por fora, macio por dentro, cada mordida é um doce momento!' 🎵";
+        texto = "🎵 'No doce aroma de lembrança e carinho, um churros aquece o caminho. Doce de leite ou Nutella a brilhar, sabores que fazem a infância voltar. E no baralho entregue com tanto amor, vai junto um pedaço do calor.' 🎵";
         break;
       case 'violao':
-        texto = "🎵 'O violão canta com cordas de prata, melodias que tocam a alma que bate. Suas notas flutuam como o vento ao ar, fazendo os corações dançar!' 🎵";
+        texto = "🎵 'Cordas vibram contando emoção, memórias dançam em cada canção. O som do violão ecoa no ar, e o coração do vovô começa a encantar. Mais que música, mais que som, é amor que se guarda em cada tom.' 🎵";
         break;
       case 'taberna':
-        texto = "🎵 'Na taberna alegre, onde todos se encontram, histórias e risadas, amizades que afloram. Com música e festa, o lugar ganha vida, uma noite mágica que nunca é esquecida!' 🎵";
+        texto = "🎵 'Na taberna cheia de riso e calor, perfume, pastel e drink com sabor. Entre broncas, risadas e afeto no olhar, é na família que a alma encontra seu lar. Mesmo no estresse, no cansaço ou na lida, o carinho tempera a receita da vida.' 🎵";
         break;
       default:
         texto = "🎵 'Uma melodia suave ecoa pelo ar, trazendo paz e alegria a quem puder escutar!' 🎵";
@@ -3984,7 +3945,7 @@
     await showDialog("TIO BRUNO CANTA:", texto);
     
     // Show final blessing dialogue
-    await showDialog("TIO BRUNO:", "Que belas histórias! Vá com meu abençoamento, pequeno guerreiro!");
+    await showDialog("TIO BRUNO:", "Que belas histórias! Vá com meu abençoamento, pequeno guerreiro! E conte SEMPRE comigo.");
     
     // Unlock the exit for next level
     mostrarSaidaLevel6();
